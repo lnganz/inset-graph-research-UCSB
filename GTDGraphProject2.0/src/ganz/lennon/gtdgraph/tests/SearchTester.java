@@ -57,28 +57,32 @@ public class SearchTester {
 			numTrials = kb.nextInt();
 			ArrayList<Double> averages;
 			double average;
+			vertices = constructErdosGraph(numVertices, startEF);
 			for (double i = startEF; i <= endEF; i += incrementEF) {
 				averages = new ArrayList<Double>();
+				System.out.println();
+				System.out.println("Vertices: " + g.vertexSet().size());
+				System.out.println("Edges: " + g.edgeSet().size());
 				for (int j = 0; j < numTrials; j++) {
-//					System.out.println("Edge Factor: " + i);
-					if (j % 10 == 0){
+					// System.out.println("Edge Factor: " + i);
+					if (j % 10 == 0) {
 						System.out.println("Processing...");
 					}
-					reset();
+					
+//					reset();
 					// vertices = constructRandomGraph(numVertices, edgeFactor);
-					vertices = constructErdosGraph(numVertices, i);
-//					System.out.println("New Graph: " + g.vertexSet().size()
-//							+ " vertices");
+//					vertices = constructErdosGraph(numVertices, i);
+					// System.out.println("New Graph: " + g.vertexSet().size()
+					// + " vertices");
 					// System.out.println("Enter output filename");
 					// filename = kb.next();
-
 					averages.add(consoleTest(vertices));
 				}
 				average = calculateAverage(averages);
 				out.append("Factor: " + i + "\nAverage: " + average + "\n");
 				System.out.println("Average time with edge factor " + i + ": "
 						+ average);
-				// excelTest(vertices, filename);
+				increaseDensity(vertices, incrementEF);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -87,37 +91,20 @@ public class SearchTester {
 
 	public void test() {
 		boolean going = true;
+		int numVertices;
+		double startEF;
 		ArrayList<PropertyVertex> vertices;
 		PropertyVertex v1, v2, v3, v4;
 		String filename;
 		repeatedTest();
 		// reset();
-		// // vertices = constructRandomGraph(1000, 3);
-//		 v1 = new PropertyVertex();
-//		 g.addVertex(v1);
-//		 v2 = new PropertyVertex();
-//		 g.addVertex(v2);
-//		 v3 = new PropertyVertex();
-//		 g.addVertex(v3);
-//		 v4 = new PropertyVertex();
-//		 g.addVertex(v4);
-//		 ReachabilityBFS reach = new ReachabilityBFS(g);
-//		 g.addEdge(v1, v2);
-//		 g.addEdge(v2, v3);
-//		 g.addEdge(v2, v4);
-//		 v1 = randomVertex(vertices);
-//		 v2 = randomVertex(vertices);
-//		 double t;
-//		 System.out.println();
-//		 reach.pathLengthBiBFS(v1, v3);
-//		 // reach.pathLengthBFS(v1, v3);
-//		 t = System.nanoTime();
-//		 System.out.println(reach.pathLengthBiBFS(v1, v2));
-//		 System.out.println(System.nanoTime() - t);
-//		 t = System.nanoTime();
-//		 System.out.println(reach.pathLengthBFS(v1, v2));
-//		 System.out.println(System.nanoTime() - t);
-//		 t = System.nanoTime();
+//		Scanner kb = new Scanner(System.in);
+//		System.out.print("Enter number of vertices: ");
+//		numVertices = kb.nextInt();
+//		System.out.print("Enter starting edge probability: ");
+//		startEF = kb.nextDouble();
+//		vertices = constructErdosGraph(numVertices, startEF);
+
 	}
 
 	@SuppressWarnings("unused")
@@ -141,6 +128,23 @@ public class SearchTester {
 					v2 = vertices.get(j);
 					if (Math.random() < densityFactor)
 						g.addEdge(v1, v2);
+				}
+			}
+		}
+	}
+
+	private void increaseDensity(ArrayList<PropertyVertex> vertices, double incrementFactor) {
+		int numEdgesToAdd = (int) (vertices.size() * incrementFactor);
+		int numEdgesAdded;
+		PropertyVertex v1, v2;
+		for (int i = 0; i < vertices.size(); i++) {
+			v1 = vertices.get(i);
+			numEdgesAdded = 0;
+			while (numEdgesAdded < numEdgesToAdd) {
+				v2 = randomVertex(vertices);
+				if (!v1.equals(v2) && !g.containsEdge(v1, v2)){
+					g.addEdge(v1, v2);
+					numEdgesAdded++;
 				}
 			}
 		}
@@ -342,11 +346,11 @@ public class SearchTester {
 				count++;
 			}
 		}
-//		System.out.println("Paths found: " + count);
+		// System.out.println("Paths found: " + count);
 		if (count > 0) {
 			avgToReturn = (100 * (bibfsSum / count) / (double) (bfsSum / count));
-//			System.out.println("Average Percent: " + df.format(avgToReturn)
-//					+ "%");
+			// System.out.println("Average Percent: " + df.format(avgToReturn)
+			// + "%");
 			return avgToReturn;
 		} else
 			return -1;

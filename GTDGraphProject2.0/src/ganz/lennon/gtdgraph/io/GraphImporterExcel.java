@@ -264,7 +264,7 @@ public class GraphImporterExcel {
 						}
 						e = graph.addEdge(v1, v2);
 						e.addLabel("TARGET");
-						if (v3 != null){
+						if (v3 != null && !graph.containsEdge(v3, v2)){
 						e = graph.addEdge(v3, v2);
 						e.addLabel("SUBTARGET_OF");
 						}

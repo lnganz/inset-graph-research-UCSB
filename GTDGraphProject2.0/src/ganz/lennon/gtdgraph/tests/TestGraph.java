@@ -43,18 +43,20 @@ public class TestGraph {
 														// names into array
 
 		double startTime = System.currentTimeMillis();
-//		System.out.println("Importing GTD");
+		System.out.println("Importing GTD");
 		
-//		GraphImporterExcel imp = new GraphImporterExcel();
+		GraphImporterExcel imp = new GraphImporterExcel();
 //		imp.importFromExcel("test.xlsx", dg);
 
 //		GraphImporterText gimp = new GraphImporterText(dg);
 //		gimp.importGraph("TestGraphData3.txt");
 
+		imp.importFromExcel("C:\\Users\\Sigma\\Desktop\\GTD06_12Subset.xlsx", dg);
+		
 //		imp.importFromExcel(
 //				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
 //				dg);
-//		System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		System.out.println((System.currentTimeMillis() - startTime) / 1000);
 //		imp.importFromExcel(
 //				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
 //				dg);
@@ -75,8 +77,8 @@ public class TestGraph {
 		// ReachabilityBFS reach = new ReachabilityBFS(dg);
 		//
 		// }
-		 SearchTester search = new SearchTester();
-		 search.test();
+//		 SearchTester search = new SearchTester();
+//		 search.test();
 
 //		 DOTExporter<PropertyVertex, PropertyEdge> dot = new DOTExporter<PropertyVertex, PropertyEdge>();
 //		 
@@ -87,16 +89,16 @@ public class TestGraph {
 //			e.printStackTrace();
 //		}
 //		 
-//		 GmlExporter<PropertyVertex, PropertyEdge> ge = new
-//		 GmlExporter<PropertyVertex, PropertyEdge>();
-//		
-//		 System.out.println("Writing to file...");
-//		 try {
-//		 ge.setPrintLabels(3);
-//		 ge.export(new FileWriter("TestGraphData.gml"), dg);
-//		 } catch (IOException e) {
-//		 e.printStackTrace();
-//		 }
+		 GmlExporter<PropertyVertex, PropertyEdge> ge = new
+		 GmlExporter<PropertyVertex, PropertyEdge>();
+		
+		 System.out.println("Writing to file...");
+		 try {
+		 ge.setPrintLabels(3);
+		 ge.export(new FileWriter("TestGraphData06_12.gml"), dg);
+		 } catch (IOException e) {
+		 e.printStackTrace();
+		 }
 		 
 		 
 		System.out.println("Done!");
