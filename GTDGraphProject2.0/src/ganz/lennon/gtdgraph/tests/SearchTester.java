@@ -1,7 +1,6 @@
 package ganz.lennon.gtdgraph.tests;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,9 +13,6 @@ import ganz.lennon.gtdgraph.search.ReachabilityBFS;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.Graph;
-import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.ext.GmlExporter;
 import org.jgrapht.graph.ClassBasedEdgeFactory;
 import org.jgrapht.graph.DirectedMultigraph;
 

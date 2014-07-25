@@ -14,6 +14,7 @@ import ganz.lennon.gtdgraph.io.GraphImporterExcel;
 import ganz.lennon.gtdgraph.io.GraphImporterText;
 import ganz.lennon.gtdgraph.io.TableLoader;
 import ganz.lennon.gtdgraph.search.ReachabilityBFS;
+import ganz.lennon.gtdgraph.search.SubgraphMatcher;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -28,9 +29,10 @@ public class TestGraph {
 								// index is country code
 		String[] weaponSubtypeCodes; // String representations of weapon
 										// subtypes
-		Map<Integer, HashSet<PropertyVertex>> iCC;// reverse indexed by
+		Map<Object, HashSet<PropertyVertex>> iCC;// reverse indexed by
 													// Country Code
-		Map<String, HashSet<PropertyVertex>> iCN;// Corp name
+		Map<Object, HashSet<PropertyVertex>> iCN;// Corp name
+		Map<Object, HashSet<PropertyVertex>> iGN;// Group name
 		DirectedGraph<PropertyVertex, PropertyEdge> dg = new DirectedMultigraph<PropertyVertex, PropertyEdge>(
 				new ClassBasedEdgeFactory<PropertyVertex, PropertyEdge>(
 						PropertyEdge.class));
@@ -44,63 +46,75 @@ public class TestGraph {
 
 		double startTime = System.currentTimeMillis();
 		System.out.println("Importing GTD");
-		
+
 		GraphImporterExcel imp = new GraphImporterExcel();
-//		imp.importFromExcel("test.xlsx", dg);
+		imp.importFromExcel("test.xlsx", dg);
 
-//		GraphImporterText gimp = new GraphImporterText(dg);
-//		gimp.importGraph("TestGraphData3.txt");
+		iCC = imp.getIndexCountryCode();
+		iCN = imp.getIndexCorpName();
+		iGN = imp.getIndexGroupName();
 
-		imp.importFromExcel("C:\\Users\\Sigma\\Desktop\\GTD06_12Subset.xlsx", dg);
+		SubgraphMatcher matcher = new SubgraphMatcher(dg);
+		matcher.importIndex(iCC, "COUNTRY_CODE");
+		matcher.importIndex(iCN, "CORPORATION_NAME");
+		matcher.importIndex(iGN, "GROUP_NAME");
 		
-//		imp.importFromExcel(
-//				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
-//				dg);
-		System.out.println((System.currentTimeMillis() - startTime) / 1000);
-//		imp.importFromExcel(
-//				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
-//				dg);
-//		System.out.println((System.currentTimeMillis() - startTime) / 1000);
-//		imp.importFromExcel(
-//				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_70to89_1213dist.xlsx",
-//				dg);
-//		System.out.println((System.currentTimeMillis() - startTime) / 1000);
-//		System.out.println("Number of vertices: " + dg.vertexSet().size());
-//		System.out.println("Import Successful!");
-		// System.out.println("Load Time: " + (System.currentTimeMillis() -
-		// startTime)
-		// / 1000 + " seconds");
-		// // imp = null;
-		// iCC = imp.getIndexCountryCode();
-		// iCN = imp.getIndexCorpName();
+		Set<PropertyVertex> set1, set2;
+		set1 = matcher.getVerticesByValue("GROUP_NAME", "Taliban");
+		System.out.println(set1);
+		set2 = matcher.getVerticesByValue("COUNTRY_CODE", 4);
+		System.out.println(set2);
+		Set<PropertyEdge> edges = matcher.getSuitableEdges(set1, set2, "PERPETRATED");
+		System.out.println(edges);
+		for (PropertyEdge e : edges){
+			System.out.println(dg.getEdgeTarget(e));
+		}
+		
 
-		// ReachabilityBFS reach = new ReachabilityBFS(dg);
+		// GraphImporterText gimp = new GraphImporterText(dg);
+		// gimp.importGraph("TestGraphData3.txt");
+
+		// imp.importFromExcel("C:\\Users\\Sigma\\Desktop\\GTD06_12Subset.xlsx",
+		// dg);
+
+		// imp.importFromExcel(
+		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
+		// dg);
+		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		// imp.importFromExcel(
+		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
+		// dg);
+		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		// imp.importFromExcel(
+		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_70to89_1213dist.xlsx",
+		// dg);
+		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		// System.out.println("Number of vertices: " + dg.vertexSet().size());
+		// System.out.println("Import Successful!");
+		// SearchTester search = new SearchTester();
+		// search.test();
+
+		// DOTExporter<PropertyVertex, PropertyEdge> dot = new
+		// DOTExporter<PropertyVertex, PropertyEdge>();
 		//
+		// try {
+		// dot.export(new FileWriter("testDOT1.dot"), dg);
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
 		// }
-//		 SearchTester search = new SearchTester();
-//		 search.test();
+		//
+		// GmlExporter<PropertyVertex, PropertyEdge> ge = new
+		// GmlExporter<PropertyVertex, PropertyEdge>();
+		//
+		// System.out.println("Writing to file...");
+		// try {
+		// ge.setPrintLabels(3);
+		// ge.export(new FileWriter("TestGraphData06_12.gml"), dg);
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 
-//		 DOTExporter<PropertyVertex, PropertyEdge> dot = new DOTExporter<PropertyVertex, PropertyEdge>();
-//		 
-//		 try {
-//			dot.export(new FileWriter("testDOT1.dot"), dg);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		 
-		 GmlExporter<PropertyVertex, PropertyEdge> ge = new
-		 GmlExporter<PropertyVertex, PropertyEdge>();
-		
-		 System.out.println("Writing to file...");
-		 try {
-		 ge.setPrintLabels(3);
-		 ge.export(new FileWriter("TestGraphData06_12.gml"), dg);
-		 } catch (IOException e) {
-		 e.printStackTrace();
-		 }
-		 
-		 
 		System.out.println("Done!");
 	}
 
@@ -113,4 +127,5 @@ public class TestGraph {
 
 		return vertices;
 	}
+	
 }

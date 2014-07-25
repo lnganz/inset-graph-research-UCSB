@@ -15,6 +15,7 @@ public class GraphImporterText {
 
 	DirectedGraph<PropertyVertex, PropertyEdge> g;
 	HashMap<Integer, PropertyVertex> addedVertices;
+	HashMap<Long, Set<PropertyVertex>> idIndex;
 
 	public GraphImporterText(DirectedGraph<PropertyVertex, PropertyEdge> g) {
 		this.g = g;
@@ -65,7 +66,7 @@ public class GraphImporterText {
 		try {
 			inputStream = new FileInputStream(filename);
 			sc = new Scanner(inputStream);
-			for (int i = 0; i < 6; i++) {
+			for (int i = 0; i < 6; i++) {//skip meaningless lines
 				sc.nextLine();
 			}
 			while (sc.hasNextLine()) {

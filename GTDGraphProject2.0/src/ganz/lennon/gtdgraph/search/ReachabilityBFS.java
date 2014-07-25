@@ -90,7 +90,6 @@ public class ReachabilityBFS {
 		return getPathBFS(start, end).size() - 1;
 	}
 
-	// breathestretchshake
 	public boolean isReachableBiBFS(PropertyVertex start, PropertyVertex end) {
 		Queue<PropertyVertex> qS = new LinkedList<PropertyVertex>();
 		Queue<PropertyVertex> qT = new LinkedList<PropertyVertex>();

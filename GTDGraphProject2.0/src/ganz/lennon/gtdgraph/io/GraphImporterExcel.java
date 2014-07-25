@@ -18,8 +18,9 @@ public class GraphImporterExcel {
 	Map<String, PropertyVertex> addedCorps = new HashMap<String, PropertyVertex>(1000);
 	Map<String, PropertyVertex> addedGroups = new HashMap<String, PropertyVertex>(1000);
 	Map<String, PropertyVertex> addedTargets = new HashMap<String, PropertyVertex>(1000);
-	Map<Object, HashSet<PropertyVertex>> indexedByCountryCode = new HashMap<Object, HashSet<PropertyVertex>>(100000);
-	Map<String, HashSet<PropertyVertex>> indexedByCorpName = new HashMap<String, HashSet<PropertyVertex>>(1000);
+	Map<Object, HashSet<PropertyVertex>> indexedByCountryCode = new HashMap<Object, HashSet<PropertyVertex>>(10000);
+	Map<Object, HashSet<PropertyVertex>> indexedByCorpName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
+	Map<Object, HashSet<PropertyVertex>> indexedByGroupName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
 	static int numVerticesAdded = 0;
 
 	
@@ -219,14 +220,6 @@ public class GraphImporterExcel {
 					if (cell != null) {
 						curCorp = cell.getStringCellValue();
 						if (!curCorp.equals("")){
-						if (indexedByCorpName.containsKey(curCorp)){//If the corp name is already indexed
-							indexedByCorpName.get(curCorp).add(v1);//add this vertex to that corp's set
-						}
-						else{
-							tempSet = new HashSet<PropertyVertex>(10);
-							tempSet.add(v1);
-							indexedByCorpName.put(curCorp, tempSet);
-						}
 						unknown = curCorp.equals("Unknown");
 						if (!unknown && addedCorps.containsKey(curCorp)) {
 							v2 = addedCorps.get(curCorp);
@@ -235,8 +228,16 @@ public class GraphImporterExcel {
 							graph.addVertex(v2);
 							if (!unknown)
 								addedCorps.put(curCorp, v2);
-							v2.addProperty("NAME", curCorp);
+							v2.addProperty("CORPORATION_NAME", curCorp);
 							v2.addLabel("CORPORATION");
+						}
+						if (indexedByCorpName.containsKey(curCorp)){//If the corp name is already indexed
+							indexedByCorpName.get(curCorp).add(v2);//add this vertex to that corp's set
+						}
+						else{
+							tempSet = new HashSet<PropertyVertex>(10);
+							tempSet.add(v2);
+							indexedByCorpName.put(curCorp, tempSet);
 						}
 						v3 = v2;
 						e = graph.addEdge(v1, v2);
@@ -259,7 +260,7 @@ public class GraphImporterExcel {
 							graph.addVertex(v2);
 							if (!unknown)
 								addedTargets.put(curTarget, v2);
-							v2.addProperty("NAME", curTarget);
+							v2.addProperty("TARGET_NAME", curTarget);
 							v2.addLabel("TARGET");
 						}
 						e = graph.addEdge(v1, v2);
@@ -350,7 +351,7 @@ public class GraphImporterExcel {
 								v2 = new PropertyVertex(++numVerticesAdded);
 								graph.addVertex(v2);
 								addedGroups.put(curGroup, v2);
-								v2.addProperty("NAME", curGroup);
+								v2.addProperty("GROUP_NAME", curGroup);
 								v2.addLabel("TGROUP");
 							}
 							e = graph.addEdge(v1, v2);
@@ -359,6 +360,14 @@ public class GraphImporterExcel {
 							e.addLabel("PERPETRATED");	//Edge relating group to incident
 							vg1 = v2;
 //							System.out.println("Group: " + curGroup);
+							if (indexedByGroupName.containsKey(curGroup)){//If the corp name is already indexed
+								indexedByGroupName.get(curGroup).add(v2);//add this vertex to that corp's set
+							}
+							else{
+								tempSet = new HashSet<PropertyVertex>(10);
+								tempSet.add(v2);
+								indexedByGroupName.put(curGroup, tempSet);
+							}
 						}
 					}
 
@@ -379,8 +388,8 @@ public class GraphImporterExcel {
 								v2 = new PropertyVertex(++numVerticesAdded);
 								graph.addVertex(v2);
 								addedGroups.put(curGroup, v2);
-								v2.addProperty("NAME", curGroup);
-								v2.addLabel("SUBGROUP");
+								v2.addProperty("GROUP_NAME", curGroup);
+								v2.addLabel("TGROUP");
 							}
 							e = graph.addEdge(v1, v2);
 							e.addLabel("PERPETRATED_BY"); //Edge relating incident to group
@@ -391,6 +400,14 @@ public class GraphImporterExcel {
 							e = graph.addEdge(vg1, v2);
 							e.addLabel("COLAB_WITH");
 							vg2 = v2;
+							if (indexedByGroupName.containsKey(curGroup)){//If the corp name is already indexed
+								indexedByGroupName.get(curGroup).add(v2);//add this vertex to that corp's set
+							}
+							else{
+								tempSet = new HashSet<PropertyVertex>(10);
+								tempSet.add(v2);
+								indexedByGroupName.put(curGroup, tempSet);
+							}
 	//						System.out.println("Group: " + curGroup);
 						}
 					}
@@ -412,7 +429,7 @@ public class GraphImporterExcel {
 							v2 = new PropertyVertex(++numVerticesAdded);
 							graph.addVertex(v2);
 							addedGroups.put(curGroup, v2);
-							v2.addProperty("NAME", curGroup);
+							v2.addProperty("GROUP_NAME", curGroup);
 							v2.addLabel("TGROUP");
 						}
 						e = graph.addEdge(v1, v2);
@@ -428,6 +445,14 @@ public class GraphImporterExcel {
 						e = graph.addEdge(vg2, v2);
 						e.addLabel("COLAB_WITH");
 						vg3 = v2;
+						if (indexedByGroupName.containsKey(curGroup)){//If the corp name is already indexed
+							indexedByGroupName.get(curGroup).add(v2);//add this vertex to that corp's set
+						}
+						else{
+							tempSet = new HashSet<PropertyVertex>(10);
+							tempSet.add(v2);
+							indexedByGroupName.put(curGroup, tempSet);
+						}
 //						System.out.println("Group: " + curGroup);
 					}
 					}
@@ -668,7 +693,11 @@ public class GraphImporterExcel {
 		return indexedByCountryCode;
 	}
 	
-	public Map<String, HashSet<PropertyVertex>> getIndexCorpName(){
+	public Map<Object, HashSet<PropertyVertex>> getIndexCorpName(){
 		return indexedByCorpName;
+	}
+	
+	public Map<Object, HashSet<PropertyVertex>> getIndexGroupName(){
+		return indexedByGroupName;
 	}
 }

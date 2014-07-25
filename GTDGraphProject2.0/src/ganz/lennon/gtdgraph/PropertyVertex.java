@@ -76,21 +76,22 @@ public class PropertyVertex {
 	public String toString() {
 		String temp;
 		StringBuilder s = new StringBuilder();
-//		s.append(properties.toString());
-		if (labels.contains("TGROUP"))
-			s.append(properties.get("NAME"));
-		else if(labels.contains("INCIDENT"))
-			s.append(properties.get("vID"));
-		else if (labels.contains("TARGET"))
-			s.append(properties.get("NAME"));
-		else if (labels.contains("CORPORATION")){
-			temp = properties.get("NAME").toString();
-			if (!temp.contains("\""))
-				s.append(properties.get("NAME"));
-			else
-				s.append("ERROR");
-		}
-//		s.append(properties.get("vID"));
+//		s.append(properties.toString()); //for printing complete file
+		
+//		if (labels.contains("TGROUP"))
+//			s.append(properties.get("GROUP_NAME"));
+//		else if(labels.contains("INCIDENT"))
+//			s.append(properties.get("vID"));
+//		else if (labels.contains("TARGET"))
+//			s.append(properties.get("TARGET_NAME"));
+//		else if (labels.contains("CORPORATION")){
+//			temp = properties.get("CORPORATION_NAME").toString();
+//			if (!temp.contains("\""))
+//				s.append(temp);
+//			else
+//				s.append("ERROR");
+//		}
+		s.append(properties.get("vID"));
 
 		return s.toString();
 	}
