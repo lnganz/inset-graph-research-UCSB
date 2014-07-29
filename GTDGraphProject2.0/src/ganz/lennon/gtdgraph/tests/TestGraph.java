@@ -29,11 +29,12 @@ public class TestGraph {
 								// index is country code
 		String[] weaponSubtypeCodes; // String representations of weapon
 										// subtypes
-		Map<Object, HashSet<PropertyVertex>> iCC;// reverse indexed by
-													// Country Code
-		Map<Object, HashSet<PropertyVertex>> iCN;// Corp name
-		Map<Object, HashSet<PropertyVertex>> iGN;// Group name
-		DirectedGraph<PropertyVertex, PropertyEdge> dg = new DirectedMultigraph<PropertyVertex, PropertyEdge>(
+		HashMap<Object, HashSet<PropertyVertex>> iCC;// reverse indexed by
+														// Country Code
+		HashMap<Object, HashSet<PropertyVertex>> iCN;// Corp name
+		HashMap<Object, HashSet<PropertyVertex>> iGN;// Group name
+		HashMap<Long, PropertyVertex> iID; // vID
+		DirectedGraph<PropertyVertex, PropertyEdge> dg = new DefaultDirectedGraph<PropertyVertex, PropertyEdge>(
 				new ClassBasedEdgeFactory<PropertyVertex, PropertyEdge>(
 						PropertyEdge.class));
 
@@ -48,31 +49,30 @@ public class TestGraph {
 		System.out.println("Importing GTD");
 
 		GraphImporterExcel imp = new GraphImporterExcel();
-		imp.importFromExcel("test.xlsx", dg);
+		imp.importFromExcel("test2.xlsx", dg);
+//		imp.importFromExcel(
+//				"C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
+
+		System.out.println((System.currentTimeMillis() - startTime) / 1000);
 
 		iCC = imp.getIndexCountryCode();
 		iCN = imp.getIndexCorpName();
 		iGN = imp.getIndexGroupName();
+		iID = imp.getIndexID();
 
-		SubgraphMatcher matcher = new SubgraphMatcher(dg);
+		SubgraphMatcher matcher = new SubgraphMatcher(dg, iID);
 		matcher.importIndex(iCC, "COUNTRY_CODE");
 		matcher.importIndex(iCN, "CORPORATION_NAME");
 		matcher.importIndex(iGN, "GROUP_NAME");
-		
-		Set<PropertyVertex> set1, set2;
-		set1 = matcher.getVerticesByValue("GROUP_NAME", "Taliban");
-		System.out.println(set1);
-		set2 = matcher.getVerticesByValue("COUNTRY_CODE", 4);
-		System.out.println(set2);
-		Set<PropertyEdge> edges = matcher.getSuitableEdges(set1, set2, "PERPETRATED");
-		System.out.println(edges);
-		for (PropertyEdge e : edges){
-			System.out.println(dg.getEdgeTarget(e));
-		}
-		
+		matcher.importMainIndex(iID);
 
-		// GraphImporterText gimp = new GraphImporterText(dg);
-		// gimp.importGraph("TestGraphData3.txt");
+		// System.out.println(iCC.toString());
+		// imp.writeIndexToFile(iCC, "COUNTRY_CODE");
+		matcher.test();
+		// matcher.testIsomorphism();
+
+//		 GraphImporterText gimp = new GraphImporterText(dg);
+//		 gimp.importGraph("Data06_12.txt");
 
 		// imp.importFromExcel("C:\\Users\\Sigma\\Desktop\\GTD06_12Subset.xlsx",
 		// dg);
@@ -80,7 +80,7 @@ public class TestGraph {
 		// imp.importFromExcel(
 		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
 		// dg);
-		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		System.out.println((System.currentTimeMillis() - startTime) / 1000);
 		// imp.importFromExcel(
 		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
 		// dg);
@@ -90,27 +90,19 @@ public class TestGraph {
 		// dg);
 		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
 		// System.out.println("Number of vertices: " + dg.vertexSet().size());
+		// System.out.println("Number of edges: " + dg.edgeSet().size());
+
 		// System.out.println("Import Successful!");
 		// SearchTester search = new SearchTester();
 		// search.test();
 
-		// DOTExporter<PropertyVertex, PropertyEdge> dot = new
-		// DOTExporter<PropertyVertex, PropertyEdge>();
-		//
-		// try {
-		// dot.export(new FileWriter("testDOT1.dot"), dg);
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
 		// GmlExporter<PropertyVertex, PropertyEdge> ge = new
 		// GmlExporter<PropertyVertex, PropertyEdge>();
 		//
 		// System.out.println("Writing to file...");
 		// try {
 		// ge.setPrintLabels(3);
-		// ge.export(new FileWriter("TestGraphData06_12.gml"), dg);
+		// ge.export(new FileWriter("Data06_12.txt"), dg);
 		// } catch (IOException e) {
 		// e.printStackTrace();
 		// }
@@ -127,5 +119,4 @@ public class TestGraph {
 
 		return vertices;
 	}
-	
 }

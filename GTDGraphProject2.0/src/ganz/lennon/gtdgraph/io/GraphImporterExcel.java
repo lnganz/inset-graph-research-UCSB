@@ -15,16 +15,17 @@ public class GraphImporterExcel {
 
 	// List<PropertyVertex> addedAttributes = new ArrayList<PropertyVertex>(50);
 	// Map<String, Object> addedVertices = new HashMap<String, Object>();
-	Map<String, PropertyVertex> addedCorps = new HashMap<String, PropertyVertex>(1000);
-	Map<String, PropertyVertex> addedGroups = new HashMap<String, PropertyVertex>(1000);
-	Map<String, PropertyVertex> addedTargets = new HashMap<String, PropertyVertex>(1000);
-	Map<Object, HashSet<PropertyVertex>> indexedByCountryCode = new HashMap<Object, HashSet<PropertyVertex>>(10000);
-	Map<Object, HashSet<PropertyVertex>> indexedByCorpName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
-	Map<Object, HashSet<PropertyVertex>> indexedByGroupName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
+	HashMap<String, PropertyVertex> addedCorps = new HashMap<String, PropertyVertex>(1000);
+	HashMap<String, PropertyVertex> addedGroups = new HashMap<String, PropertyVertex>(1000);
+	HashMap<String, PropertyVertex> addedTargets = new HashMap<String, PropertyVertex>(1000);
+	HashMap<Object, HashSet<PropertyVertex>> indexedByCountryCode = new HashMap<Object, HashSet<PropertyVertex>>(10000);
+	HashMap<Object, HashSet<PropertyVertex>> indexedByCorpName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
+	HashMap<Object, HashSet<PropertyVertex>> indexedByGroupName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
+	HashMap<Long, PropertyVertex> indexedByID = new HashMap<Long, PropertyVertex>(1000);
 	static int numVerticesAdded = 0;
 
 	
-	public boolean importFromExcel(String filename, Graph<PropertyVertex, PropertyEdge> graph) {
+	public boolean importFromExcel(String filename, DirectedGraph<PropertyVertex, PropertyEdge> graph) {
 
 		try {
 			FileInputStream file = new FileInputStream(new File(filename));
@@ -47,6 +48,7 @@ public class GraphImporterExcel {
 			String curGroup, curTarget, curCorp, tempStr;//Temporary strings
 			boolean corpAdded, unknown;
 			int tempNum;
+			long vID;
 			ArrayList<PropertyVertex> tempAL;
 			HashSet<PropertyVertex> tempSet;
 			
@@ -66,12 +68,14 @@ public class GraphImporterExcel {
 					cn = 0;
 					cell = r.getCell(cn); // go to next column
 
-					v1 = new PropertyVertex((long) cell.getNumericCellValue()); // new vertex with event ID
+					vID = (long) cell.getNumericCellValue();
+					v1 = new PropertyVertex(vID); // new vertex with event ID
 					v1.addLabel("INCIDENT");
-					cell = r.getCell(++cn);
-
 					graph.addVertex(v1); // Add new vertex to graph
+					indexedByID.put(vID, v1);
 
+					cell = r.getCell(++cn);
+					
 					if (cell != null)
 						v1.addProperty("YEAR", (int) cell.getNumericCellValue()); // Year
 					cell = r.getCell(++cn);
@@ -226,6 +230,7 @@ public class GraphImporterExcel {
 						} else {
 							v2 = new PropertyVertex(++numVerticesAdded);
 							graph.addVertex(v2);
+							indexedByID.put((long) numVerticesAdded, v2);
 							if (!unknown)
 								addedCorps.put(curCorp, v2);
 							v2.addProperty("CORPORATION_NAME", curCorp);
@@ -258,6 +263,7 @@ public class GraphImporterExcel {
 						} else {
 							v2 = new PropertyVertex(++numVerticesAdded);
 							graph.addVertex(v2);
+							indexedByID.put((long) numVerticesAdded, v2);
 							if (!unknown)
 								addedTargets.put(curTarget, v2);
 							v2.addProperty("TARGET_NAME", curTarget);
@@ -350,6 +356,7 @@ public class GraphImporterExcel {
 							} else {
 								v2 = new PropertyVertex(++numVerticesAdded);
 								graph.addVertex(v2);
+								indexedByID.put((long) numVerticesAdded, v2);
 								addedGroups.put(curGroup, v2);
 								v2.addProperty("GROUP_NAME", curGroup);
 								v2.addLabel("TGROUP");
@@ -387,19 +394,29 @@ public class GraphImporterExcel {
 							} else {
 								v2 = new PropertyVertex(++numVerticesAdded);
 								graph.addVertex(v2);
+								indexedByID.put((long) numVerticesAdded, v2);
 								addedGroups.put(curGroup, v2);
 								v2.addProperty("GROUP_NAME", curGroup);
 								v2.addLabel("TGROUP");
 							}
+							if (!graph.containsEdge(v1, v2)){
 							e = graph.addEdge(v1, v2);
 							e.addLabel("PERPETRATED_BY"); //Edge relating incident to group
 							e = graph.addEdge(v2, v1);
 							e.addLabel("PERPETRATED");	//Edge relating group to incident
-							e = graph.addEdge(v2, vg1);
-							e.addLabel("COLAB_WITH");
-							e = graph.addEdge(vg1, v2);
-							e.addLabel("COLAB_WITH");
-							vg2 = v2;
+							}
+							if (!graph.containsEdge(v2, vg1)){
+								e = graph.addEdge(v2, vg1);
+								e.addLabel("COLAB_WITH");
+								e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+								e = graph.addEdge(vg1, v2);
+								e.addLabel("COLAB_WITH");
+								e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+							}
+							else {
+								graph.getEdge(v2, vg1).getList("INCIDENTS").add(v1);
+								graph.getEdge(vg1, v2).getList("INCIDENTS").add(v1);
+							}
 							if (indexedByGroupName.containsKey(curGroup)){//If the corp name is already indexed
 								indexedByGroupName.get(curGroup).add(v2);//add this vertex to that corp's set
 							}
@@ -408,6 +425,7 @@ public class GraphImporterExcel {
 								tempSet.add(v2);
 								indexedByGroupName.put(curGroup, tempSet);
 							}
+							vg2 = v2;
 	//						System.out.println("Group: " + curGroup);
 						}
 					}
@@ -428,6 +446,7 @@ public class GraphImporterExcel {
 						} else {
 							v2 = new PropertyVertex(++numVerticesAdded);
 							graph.addVertex(v2);
+							indexedByID.put((long) numVerticesAdded, v2);
 							addedGroups.put(curGroup, v2);
 							v2.addProperty("GROUP_NAME", curGroup);
 							v2.addLabel("TGROUP");
@@ -436,15 +455,31 @@ public class GraphImporterExcel {
 						e.addLabel("PERPETRATED_BY"); //Edge relating incident to group
 						e = graph.addEdge(v2, v1);
 						e.addLabel("PERPETRATED");	//Edge relating group to incident
-						e = graph.addEdge(v2, vg1);
-						e.addLabel("COLAB_WITH");
-						e = graph.addEdge(vg1, v2);
-						e.addLabel("COLAB_WITH");
-						e = graph.addEdge(v2, vg2);
-						e.addLabel("COLAB_WITH");
-						e = graph.addEdge(vg2, v2);
-						e.addLabel("COLAB_WITH");
-						vg3 = v2;
+						if (!graph.containsEdge(v2, vg1)){
+							e = graph.addEdge(v2, vg1);
+							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+							e.addLabel("COLAB_WITH");
+							e = graph.addEdge(vg1, v2);
+							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+							e.addLabel("COLAB_WITH");
+						}
+						else{
+							graph.getEdge(v2, vg1).getList("INCIDENTS").add(v1);
+							graph.getEdge(vg1, v2).getList("INCIDENTS").add(v1);
+						}
+						if (!graph.containsEdge(v2, vg2)){
+							e = graph.addEdge(v2, vg2);
+							e.addLabel("COLAB_WITH");
+							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+							e = graph.addEdge(vg2, v2);
+							e.addLabel("COLAB_WITH");
+							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+							vg3 = v2;
+						}
+						else{
+							graph.getEdge(v2, vg2).getList("INCIDENTS").add(v1);
+							graph.getEdge(vg2, v2).getList("INCIDENTS").add(v1);
+						}
 						if (indexedByGroupName.containsKey(curGroup)){//If the corp name is already indexed
 							indexedByGroupName.get(curGroup).add(v2);//add this vertex to that corp's set
 						}
@@ -689,15 +724,31 @@ public class GraphImporterExcel {
 		return true;
 	}
 
-	public Map<Object, HashSet<PropertyVertex>> getIndexCountryCode(){
+	public HashMap<Object, HashSet<PropertyVertex>> getIndexCountryCode(){
 		return indexedByCountryCode;
 	}
 	
-	public Map<Object, HashSet<PropertyVertex>> getIndexCorpName(){
+	public HashMap<Object, HashSet<PropertyVertex>> getIndexCorpName(){
 		return indexedByCorpName;
 	}
 	
-	public Map<Object, HashSet<PropertyVertex>> getIndexGroupName(){
+	public HashMap<Object, HashSet<PropertyVertex>> getIndexGroupName(){
 		return indexedByGroupName;
+	}
+	
+	public HashMap<Long, PropertyVertex> getIndexID(){
+		return indexedByID;
+	}
+	
+	public boolean writeIndexToFile(Map<Object, HashSet<PropertyVertex>> index, String name){
+		try {
+			PrintWriter writer = new PrintWriter("indexed\\" + name + ".txt");
+			writer.print(index.toString());
+			writer.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
 	}
 }

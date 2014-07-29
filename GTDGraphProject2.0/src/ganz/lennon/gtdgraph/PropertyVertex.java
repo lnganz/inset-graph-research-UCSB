@@ -10,16 +10,24 @@ public class PropertyVertex {
 	private List<String> labels = new ArrayList<String>(); // Vertex Labels
 	// private List<Property> properties = new ArrayList<Property>(10); //
 	// Vertex Properties
-	private Map<String, Object> properties = new HashMap<String, Object>(50);
+	private Map<String, Object> properties = new HashMap<String, Object>();
 	// private List<PropertyEdge> edges = new ArrayList<PropertEdge>(10); //
 	// Connected Edges
 	private static String[] propcodes = new String[140];
+	private String tag;
 
 	public PropertyVertex() {
 	}
 
 	public PropertyVertex(long vID) {
 		properties.put("vID", vID);
+		tag = vID + "";
+	}
+	
+	public PropertyVertex(String tag){
+		this.tag = tag;
+		if (!tag.contains(":"))
+			properties.put("vID", Long.parseLong(tag));
 	}
 
 	// add label
@@ -48,6 +56,8 @@ public class PropertyVertex {
 	// add property
 	public void addProperty(String key, Object value) {
 		properties.put(key, value);
+		if (key.equals("vID"))
+			tag = value + "";
 	}
 
 	// check if vertex has specified property
@@ -73,6 +83,13 @@ public class PropertyVertex {
 		return (long) properties.get("vID");
 	}
 
+	public String getTag(){
+		return tag;
+	}
+	
+	public void setTag(String newTag){
+		tag = newTag;
+	}
 	public String toString() {
 		String temp;
 		StringBuilder s = new StringBuilder();
@@ -91,7 +108,8 @@ public class PropertyVertex {
 //			else
 //				s.append("ERROR");
 //		}
-		s.append(properties.get("vID"));
+//		s.append(properties.get("vID"));
+		s.append(tag);
 
 		return s.toString();
 	}

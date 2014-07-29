@@ -16,6 +16,8 @@ public class GraphImporterText {
 	DirectedGraph<PropertyVertex, PropertyEdge> g;
 	HashMap<Integer, PropertyVertex> addedVertices;
 	HashMap<Long, Set<PropertyVertex>> idIndex;
+	HashMap<String, HashMap<Object, HashSet<PropertyVertex>>> indexed;
+	HashMap<Long, PropertyVertex> mainIndex;
 
 	public GraphImporterText(DirectedGraph<PropertyVertex, PropertyEdge> g) {
 		this.g = g;
@@ -95,7 +97,13 @@ public class GraphImporterText {
 					tempEdge = g.addEdge(addedVertices.get(src),
 							addedVertices.get(tgt));
 					label = sc.nextLine().split("\\[")[1].split("\\]")[0];
-					tempEdge.addLabel(label);
+					try{
+						tempEdge.addLabel(label);
+					}catch (NullPointerException e){
+						System.out.println(src + " " + tgt + " " + label);
+						System.out.println(addedVertices.get(src) + " " + addedVertices.get(tgt));
+						e.printStackTrace();
+					}
 					sc.nextLine();
 				}
 			}
@@ -104,7 +112,10 @@ public class GraphImporterText {
 			e.printStackTrace();
 		}
 
-		return true;
+		return true;		
 	}
-
+	
+//	public void importIndex(String indexName){
+//		
+//	}
 }
