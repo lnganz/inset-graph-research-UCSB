@@ -21,6 +21,7 @@ public class GraphImporterExcel {
 	HashMap<Object, HashSet<PropertyVertex>> indexedByCountryCode = new HashMap<Object, HashSet<PropertyVertex>>(10000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByCorpName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByGroupName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
+	HashMap<Object, HashSet<PropertyVertex>> indexedByYear = new HashMap<Object, HashSet<PropertyVertex>>(1000);
 	HashMap<Long, PropertyVertex> indexedByID = new HashMap<Long, PropertyVertex>(1000);
 	static int numVerticesAdded = 0;
 
@@ -66,7 +67,7 @@ public class GraphImporterExcel {
 					vg3 = null;
 					corpAdded = false;
 					cn = 0;
-					cell = r.getCell(cn); // go to next column
+					cell = r.getCell(cn); // go to first column
 
 					vID = (long) cell.getNumericCellValue();
 					v1 = new PropertyVertex(vID); // new vertex with event ID
@@ -76,8 +77,18 @@ public class GraphImporterExcel {
 
 					cell = r.getCell(++cn);
 					
-					if (cell != null)
-						v1.addProperty("YEAR", (int) cell.getNumericCellValue()); // Year
+					if (cell != null){
+						tempNum = (int) cell.getNumericCellValue();
+						v1.addProperty("YEAR", tempNum); // Year
+						if (!indexedByYear.containsKey(tempNum)){
+							tempSet = new HashSet<PropertyVertex>();
+							tempSet.add(v1);
+							indexedByYear.put(tempNum, tempSet);
+						} else {
+							indexedByYear.get(tempNum).add(v1);
+						}
+						
+					}
 					cell = r.getCell(++cn);
 
 					if (cell != null)
@@ -164,7 +175,7 @@ public class GraphImporterExcel {
 					cell = r.getCell(++cn);
 
 					if (cell != null)
-						v1.addProperty("CRITERIA_3", (int) cell.getNumericCellValue()); // Outstide International Humanitarian Law
+						v1.addProperty("CRITERIA_3", (int) cell.getNumericCellValue()); // Outside International Humanitarian Law
 					cell = r.getCell(++cn);
 
 					if (cell != null)
@@ -252,7 +263,6 @@ public class GraphImporterExcel {
 						}else
 							v3 = null;
 					}
-					// v1.addProperty("CORP_1", cell.getStringCellValue()); // Corporation1
 					cell = r.getCell(++cn);
 
 					if (cell != null) {
@@ -278,7 +288,6 @@ public class GraphImporterExcel {
 //						System.out.println("Target: " + curTarget);
 
 					}
-					// v2 = addPropertyEdgeAndVertex(g, v1, "TARGET", cell.getStringCellValue(), "TARGETED");
 					cell = r.getCell(++cn);
 
 					cell = r.getCell(++cn); // Nationality code
@@ -405,17 +414,21 @@ public class GraphImporterExcel {
 							e = graph.addEdge(v2, v1);
 							e.addLabel("PERPETRATED");	//Edge relating group to incident
 							}
+							if (!v2.equals(vg1)){
 							if (!graph.containsEdge(v2, vg1)){
 								e = graph.addEdge(v2, vg1);
 								e.addLabel("COLAB_WITH");
 								e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
-								e = graph.addEdge(vg1, v2);
-								e.addLabel("COLAB_WITH");
-								e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+								if (!graph.containsEdge(vg1, v2)){
+									e = graph.addEdge(vg1, v2);
+									e.addLabel("COLAB_WITH");
+									e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
+								}
 							}
 							else {
 								graph.getEdge(v2, vg1).getList("INCIDENTS").add(v1);
 								graph.getEdge(vg1, v2).getList("INCIDENTS").add(v1);
+							}
 							}
 							if (indexedByGroupName.containsKey(curGroup)){//If the corp name is already indexed
 								indexedByGroupName.get(curGroup).add(v2);//add this vertex to that corp's set
@@ -455,6 +468,7 @@ public class GraphImporterExcel {
 						e.addLabel("PERPETRATED_BY"); //Edge relating incident to group
 						e = graph.addEdge(v2, v1);
 						e.addLabel("PERPETRATED");	//Edge relating group to incident
+						if (!v2.equals(vg1)){
 						if (!graph.containsEdge(v2, vg1)){
 							e = graph.addEdge(v2, vg1);
 							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
@@ -466,6 +480,7 @@ public class GraphImporterExcel {
 						else{
 							graph.getEdge(v2, vg1).getList("INCIDENTS").add(v1);
 							graph.getEdge(vg1, v2).getList("INCIDENTS").add(v1);
+						}
 						}
 						if (!graph.containsEdge(v2, vg2)){
 							e = graph.addEdge(v2, vg2);

@@ -94,6 +94,12 @@ public class PropertyEdge extends DefaultEdge {
 //		s.append("From: " + this.getSource() + "\n");
 //		s.append("To: " + this.getTarget() + "\n");
 		s.append(labels.toString());
+		for (ArrayList<PropertyVertex> list : lists.values()){
+			s.append("INCIDENTS{");
+			for (PropertyVertex v : list){
+				s.append(" " + v.getID());
+			}s.append("}\n");
+		}
 		s.append(properties.toString());
 		
 		return s.toString();

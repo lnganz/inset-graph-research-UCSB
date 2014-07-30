@@ -93,7 +93,8 @@ public class PropertyVertex {
 	public String toString() {
 		String temp;
 		StringBuilder s = new StringBuilder();
-//		s.append(properties.toString()); //for printing complete file
+		s.append(labels.toString());
+		s.append(properties.toString()); //for printing complete file
 		
 //		if (labels.contains("TGROUP"))
 //			s.append(properties.get("GROUP_NAME"));
@@ -109,7 +110,8 @@ public class PropertyVertex {
 //				s.append("ERROR");
 //		}
 //		s.append(properties.get("vID"));
-		s.append(tag);
+		
+//		s.append(tag);
 
 		return s.toString();
 	}

@@ -119,15 +119,16 @@ public class SubgraphIsomorphism {
 				edge1 = pg.getEdge(pair1[0], pair2[0]);
 				if (edge1 != null) {
 					edge2 = dg.getEdge(pair1[1], pair2[1]);
-					// if ((edge2 != null) &&
-					// (edge1.getLabel().equals(edge2.getLabel()))){
-					if (edge2 != null) {
+					 if ((edge2 != null) &&
+					 (edge1.getLabel().equals(edge2.getLabel()))){
+//					if (edge2 != null) {
 						adg.addEdge(gn1, gn2);
 						adg.addEdge(gn2, gn1);
 					}
 				} else {
-					if (!pair1[0].getTag().equals(pair2[0].getTag())
-							&& !pg.containsEdge(pair2[0], pair1[0])) {
+					if (!(pair1[0].getTag().equals(pair2[0].getTag())) 
+							&& !(pair1[1].getTag().equals(pair2[1].getTag()))
+							&& !(pg.containsEdge(pair2[0], pair1[0]))) {
 						adg.addEdge(gn1, gn2);
 //						adg.addEdge(gn2, gn1);
 					}
