@@ -34,7 +34,7 @@ public class TestGraph {
 		HashMap<Object, HashSet<PropertyVertex>> iCN;// Corp name
 		HashMap<Object, HashSet<PropertyVertex>> iGN;// Group name
 		HashMap<Long, PropertyVertex> iID; // vID
-		DirectedGraph<PropertyVertex, PropertyEdge> dg = new DefaultDirectedGraph<PropertyVertex, PropertyEdge>(
+		DirectedGraph<PropertyVertex, PropertyEdge> dg = new DirectedMultigraph<PropertyVertex, PropertyEdge>(
 				new ClassBasedEdgeFactory<PropertyVertex, PropertyEdge>(
 						PropertyEdge.class));
 
@@ -49,9 +49,9 @@ public class TestGraph {
 		System.out.println("Importing GTD");
 
 		GraphImporterExcel imp = new GraphImporterExcel();
-		imp.importFromExcel("test2.xlsx", dg);
-//		imp.importFromExcel(
-//				"C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
+//		imp.importFromExcel("test.xlsx", dg);
+		 imp.importFromExcel(
+		 "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
 
 		System.out.println((System.currentTimeMillis() - startTime) / 1000);
 
@@ -68,11 +68,11 @@ public class TestGraph {
 
 		// System.out.println(iCC.toString());
 		// imp.writeIndexToFile(iCC, "COUNTRY_CODE");
-		matcher.test();
+//		matcher.testDiamond();
 		// matcher.testIsomorphism();
 
-//		 GraphImporterText gimp = new GraphImporterText(dg);
-//		 gimp.importGraph("Data06_12.txt");
+		// GraphImporterText gimp = new GraphImporterText(dg);
+		// gimp.importGraph("Data06_12.txt");
 
 		// imp.importFromExcel("C:\\Users\\Sigma\\Desktop\\GTD06_12Subset.xlsx",
 		// dg);
@@ -80,7 +80,7 @@ public class TestGraph {
 		// imp.importFromExcel(
 		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
 		// dg);
-		System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
 		// imp.importFromExcel(
 		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
 		// dg);
@@ -96,16 +96,15 @@ public class TestGraph {
 		// SearchTester search = new SearchTester();
 		// search.test();
 
-		// GmlExporter<PropertyVertex, PropertyEdge> ge = new
-		// GmlExporter<PropertyVertex, PropertyEdge>();
-		//
-		// System.out.println("Writing to file...");
-		// try {
-		// ge.setPrintLabels(3);
-		// ge.export(new FileWriter("Data06_12.txt"), dg);
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
+		GmlExporter<PropertyVertex, PropertyEdge> ge = new GmlExporter<PropertyVertex, PropertyEdge>();
+
+		System.out.println("Writing to file...");
+		try {
+			ge.setPrintLabels(3);
+			ge.export(new FileWriter("Test06_12.txt"), dg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		System.out.println("Done!");
 	}
