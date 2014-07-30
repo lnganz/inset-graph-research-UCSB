@@ -108,7 +108,9 @@ public class PropertyVertex {
 //				s.append(temp);
 //			else
 //				s.append("ERROR");
-//		}
+//		} else
+//			s.append(tag);
+		
 //		s.append(properties.get("vID"));
 		
 //		s.append(tag);

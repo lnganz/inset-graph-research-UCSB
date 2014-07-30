@@ -31,7 +31,7 @@ public class TestGraph {
 										// subtypes
 		HashMap<Object, HashSet<PropertyVertex>> iCC;// reverse indexed by
 														// Country Code
-		HashMap<Object, HashSet<PropertyVertex>> iCN;// Corp name
+		HashMap<Object, HashMap<String, PropertyVertex>> iCN;// Corp name
 		HashMap<Object, HashSet<PropertyVertex>> iGN;// Group name
 		HashMap<Long, PropertyVertex> iID; // vID
 		DirectedGraph<PropertyVertex, PropertyEdge> dg = new DirectedMultigraph<PropertyVertex, PropertyEdge>(
@@ -49,9 +49,9 @@ public class TestGraph {
 		System.out.println("Importing GTD");
 
 		GraphImporterExcel imp = new GraphImporterExcel();
-//		imp.importFromExcel("test.xlsx", dg);
-		 imp.importFromExcel(
-		 "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
+		imp.importFromExcel("test2.xlsx", dg);
+//		 imp.importFromExcel(
+//		 "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
 
 		System.out.println((System.currentTimeMillis() - startTime) / 1000);
 
@@ -62,7 +62,7 @@ public class TestGraph {
 
 		SubgraphMatcher matcher = new SubgraphMatcher(dg, iID);
 		matcher.importIndex(iCC, "COUNTRY_CODE");
-		matcher.importIndex(iCN, "CORPORATION_NAME");
+//		matcher.importIndex(iCN, "CORPORATION_NAME");
 		matcher.importIndex(iGN, "GROUP_NAME");
 		matcher.importMainIndex(iID);
 
@@ -96,16 +96,16 @@ public class TestGraph {
 		// SearchTester search = new SearchTester();
 		// search.test();
 
-		GmlExporter<PropertyVertex, PropertyEdge> ge = new GmlExporter<PropertyVertex, PropertyEdge>();
-
-		System.out.println("Writing to file...");
-		try {
-			ge.setPrintLabels(3);
-			ge.export(new FileWriter("Test06_12.txt"), dg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+//		GmlExporter<PropertyVertex, PropertyEdge> ge = new GmlExporter<PropertyVertex, PropertyEdge>();
+//
+//		System.out.println("Writing to file...");
+//		try {
+//			ge.setPrintLabels(3);
+//			ge.export(new FileWriter("Test06_12.txt"), dg);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//
 		System.out.println("Done!");
 	}
 

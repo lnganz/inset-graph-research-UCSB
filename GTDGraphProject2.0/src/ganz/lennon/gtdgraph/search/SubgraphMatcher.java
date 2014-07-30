@@ -17,6 +17,7 @@ public class SubgraphMatcher {
 	private static final boolean INCOMING = false;
 
 	Map<String, Map<?, HashSet<PropertyVertex>>> indexes = new HashMap<String, Map<?, HashSet<PropertyVertex>>>();
+	Map<String, Map<?, HashMap<String, PropertyVertex>>> doubleIndexes = new HashMap<String, Map<?, HashMap<String, PropertyVertex>>>();
 
 	HashMap<Long, PropertyVertex> mainIndex;
 
@@ -152,6 +153,10 @@ public class SubgraphMatcher {
 			String indexedOn) {
 		indexes.put(indexedOn, index);
 	}
+	
+	public void importDoubleIndex(Map<Object, HashMap<String, PropertyVertex>> doubleIndex, String indexedOn){
+		doubleIndexes.put(indexedOn, doubleIndex);
+	}
 
 	public void importMainIndex(HashMap<Long, PropertyVertex> mainIndex) {
 		this.mainIndex = mainIndex;
@@ -161,7 +166,10 @@ public class SubgraphMatcher {
 		if (value != null) {
 			if (indexes.containsKey(key))
 				return indexes.get(key).get(value);
-			else
+			else if (doubleIndexes.containsKey(key)){
+				return (HashSet<PropertyVertex>) doubleIndexes.get(key).get(value).values();
+			}
+			else	
 				return new HashSet<PropertyVertex>();
 		} else {
 			if (indexes.containsKey(key)) {
@@ -170,7 +178,9 @@ public class SubgraphMatcher {
 					toReturn.addAll(set);
 				}
 				return toReturn;
-			} else
+			} else if (doubleIndexes.containsKey(key)){
+				
+			}
 				return new HashSet<PropertyVertex>();
 		}
 	}

@@ -15,11 +15,11 @@ public class GraphImporterExcel {
 
 	// List<PropertyVertex> addedAttributes = new ArrayList<PropertyVertex>(50);
 	// Map<String, Object> addedVertices = new HashMap<String, Object>();
-	HashMap<String, PropertyVertex> addedCorps = new HashMap<String, PropertyVertex>(1000);
+	HashMap<String, HashMap<String, PropertyVertex>> addedCorps = new HashMap<String, HashMap<String, PropertyVertex>>(1000);
 	HashMap<String, PropertyVertex> addedGroups = new HashMap<String, PropertyVertex>(1000);
 	HashMap<String, PropertyVertex> addedTargets = new HashMap<String, PropertyVertex>(1000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByCountryCode = new HashMap<Object, HashSet<PropertyVertex>>(10000);
-	HashMap<Object, HashSet<PropertyVertex>> indexedByCorpName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
+	HashMap<Object, HashMap<String, PropertyVertex>> indexedByCorpNameAndNat = new HashMap<Object, HashMap<String, PropertyVertex>>(1000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByGroupName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByYear = new HashMap<Object, HashSet<PropertyVertex>>(1000);
 	HashMap<Long, PropertyVertex> indexedByID = new HashMap<Long, PropertyVertex>(1000);
@@ -43,10 +43,10 @@ public class GraphImporterExcel {
 
 			Cell cell;
 
-			PropertyVertex v1, v2 = null, v3 = null,
+			PropertyVertex v1, v2 = null, v3 = null, vCorp, vTarget,
 					vg1, vg2, vg3;	//Temporary vertices
 			PropertyEdge e;	//Temporary edge
-			String curGroup, curTarget, curCorp, tempStr;//Temporary strings
+			String curGroup, curTarget = "", curCorp = "", tempStr;//Temporary strings
 			boolean corpAdded, unknown;
 			int tempNum;
 			long vID;
@@ -234,57 +234,12 @@ public class GraphImporterExcel {
 
 					if (cell != null) {
 						curCorp = cell.getStringCellValue();
-						if (!curCorp.equals("")){
-						unknown = curCorp.equals("Unknown");
-						if (!unknown && addedCorps.containsKey(curCorp)) {
-							v2 = addedCorps.get(curCorp);
-						} else {
-							v2 = new PropertyVertex(++numVerticesAdded);
-							graph.addVertex(v2);
-							indexedByID.put((long) numVerticesAdded, v2);
-							if (!unknown)
-								addedCorps.put(curCorp, v2);
-							v2.addProperty("CORPORATION_NAME", curCorp);
-							v2.addLabel("CORPORATION");
-						}
-						if (indexedByCorpName.containsKey(curCorp)){//If the corp name is already indexed
-							indexedByCorpName.get(curCorp).add(v2);//add this vertex to that corp's set
-						}
-						else{
-							tempSet = new HashSet<PropertyVertex>(10);
-							tempSet.add(v2);
-							indexedByCorpName.put(curCorp, tempSet);
-						}
-						v3 = v2;
-						e = graph.addEdge(v1, v2);
-						e.addLabel("TARGET_CORPORATION");
-						corpAdded = true;
-//						System.out.println("CORP: " + curCorp);
-						}else
-							v3 = null;
 					}
 					cell = r.getCell(++cn);
 
 					if (cell != null) {
 						curTarget = cell.getStringCellValue();
-						unknown = curTarget.equals("Unknown");
-						if (!unknown && addedTargets.containsKey(curTarget)) {
-							v2 = addedTargets.get(curTarget);
-						} else {
-							v2 = new PropertyVertex(++numVerticesAdded);
-							graph.addVertex(v2);
-							indexedByID.put((long) numVerticesAdded, v2);
-							if (!unknown)
-								addedTargets.put(curTarget, v2);
-							v2.addProperty("TARGET_NAME", curTarget);
-							v2.addLabel("TARGET");
-						}
-						e = graph.addEdge(v1, v2);
-						e.addLabel("TARGET");
-						if (v3 != null && !graph.containsEdge(v3, v2)){
-						e = graph.addEdge(v3, v2);
-						e.addLabel("SUBTARGET_OF");
-						}
+						
 //						System.out.println("Target: " + curTarget);
 
 					}
@@ -292,10 +247,66 @@ public class GraphImporterExcel {
 
 					cell = r.getCell(++cn); // Nationality code
 
-					if ((cell != null) && (v2 != null) && (!v2.hasProperty("TARGET_NATIONALITY")))
-						if (!cell.getStringCellValue().equals("."))
-						v2.addProperty("TARGET_NATIONALITY", cell.getStringCellValue());
-					// v1.addProperty("NATIONALITY_1", cell.getStringCellValue()); // Nationality1 string
+					if (cell != null){
+						if (!cell.getStringCellValue().equals(".")){
+							tempStr = cell.getStringCellValue(); //Nationality
+							
+							if (!curCorp.equals("")){
+								unknown = curCorp.equals("Unknown"); //THIS IS VERY UNFINISHED!!!!!!
+								if (!unknown && addedCorps.containsKey(curCorp)) { //NEED MORE CHECKS TODO d
+									if (addedCorps.get(curCorp).containsKey(tempStr))
+										vCorp = addedCorps.get(curCorp).get(tempStr);
+									else{
+										vCorp = new PropertyVertex(++numVerticesAdded);
+										indexedByID.put((long) numVerticesAdded, vCorp);
+										graph.addVertex(vCorp);
+										vCorp.addProperty("CORPORATION_NAME", curCorp);
+										vCorp.addProperty("NATIONALITY", tempStr);
+										addedCorps.get(curCorp).put(tempStr, vCorp);
+										indexedByCorpNameAndNat.get(curCorp).put(tempStr, vCorp);
+									}
+								} else {
+									vCorp = new PropertyVertex(++numVerticesAdded);
+									graph.addVertex(vCorp);
+									indexedByID.put((long) numVerticesAdded, vCorp);
+									if (!unknown){
+										HashMap<String, PropertyVertex> tempMap = new HashMap<String, PropertyVertex>();
+										tempMap.put(tempStr, vCorp);
+										addedCorps.put(curCorp, tempMap);
+										indexedByCorpNameAndNat.put(curCorp, tempMap);
+									}
+									vCorp.addProperty("CORPORATION_NAME", curCorp);
+									vCorp.addLabel("CORPORATION");
+									vCorp.addProperty("NATIONALITY", tempStr);
+								}
+								v3 = vCorp;
+								e = graph.addEdge(v1, vCorp);
+								e.addLabel("TARGET_CORPORATION");
+								corpAdded = true;
+//								System.out.println("CORP: " + curCorp);
+								}else
+									v3 = null;
+							
+							unknown = curTarget.equals("Unknown");
+							if (!unknown && addedTargets.containsKey(curTarget)) {
+								v2 = addedTargets.get(curTarget);
+							} else {
+								v2 = new PropertyVertex(++numVerticesAdded);
+								graph.addVertex(v2);
+								indexedByID.put((long) numVerticesAdded, v2);
+								if (!unknown)
+									addedTargets.put(curTarget, v2);
+								v2.addProperty("TARGET_NAME", curTarget);
+								v2.addLabel("TARGET");
+							}
+							e = graph.addEdge(v1, v2);
+							e.addLabel("TARGET");
+							if (v3 != null && !graph.containsEdge(v3, v2)){
+							e = graph.addEdge(v3, v2);
+							e.addLabel("SUBTARGET_OF");
+							}
+						}
+					}
 					cell = r.getCell(++cn);
 
 					cell = r.getCell(++cn); // TargetType2 code
@@ -417,11 +428,11 @@ public class GraphImporterExcel {
 							if (!v2.equals(vg1)){
 							if (!graph.containsEdge(v2, vg1)){
 								e = graph.addEdge(v2, vg1);
-								e.addLabel("COLAB_WITH");
+								e.addLabel("COLLAB_WITH");
 								e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
 								if (!graph.containsEdge(vg1, v2)){
 									e = graph.addEdge(vg1, v2);
-									e.addLabel("COLAB_WITH");
+									e.addLabel("COLLAB_WITH");
 									e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
 								}
 							}
@@ -472,10 +483,10 @@ public class GraphImporterExcel {
 						if (!graph.containsEdge(v2, vg1)){
 							e = graph.addEdge(v2, vg1);
 							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
-							e.addLabel("COLAB_WITH");
+							e.addLabel("COLLAB_WITH");
 							e = graph.addEdge(vg1, v2);
 							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
-							e.addLabel("COLAB_WITH");
+							e.addLabel("COLLAB_WITH");
 						}
 						else{
 							graph.getEdge(v2, vg1).getList("INCIDENTS").add(v1);
@@ -484,10 +495,10 @@ public class GraphImporterExcel {
 						}
 						if (!graph.containsEdge(v2, vg2)){
 							e = graph.addEdge(v2, vg2);
-							e.addLabel("COLAB_WITH");
+							e.addLabel("COLLAB_WITH");
 							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
 							e = graph.addEdge(vg2, v2);
-							e.addLabel("COLAB_WITH");
+							e.addLabel("COLLAB_WITH");
 							e.addList("INCIDENTS", new ArrayList<PropertyVertex>()).add(v1);
 							vg3 = v2;
 						}
@@ -743,8 +754,8 @@ public class GraphImporterExcel {
 		return indexedByCountryCode;
 	}
 	
-	public HashMap<Object, HashSet<PropertyVertex>> getIndexCorpName(){
-		return indexedByCorpName;
+	public HashMap<Object, HashMap<String, PropertyVertex>> getIndexCorpName(){
+		return indexedByCorpNameAndNat;
 	}
 	
 	public HashMap<Object, HashSet<PropertyVertex>> getIndexGroupName(){
