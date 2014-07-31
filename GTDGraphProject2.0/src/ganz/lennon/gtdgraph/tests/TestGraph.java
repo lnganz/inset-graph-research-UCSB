@@ -50,32 +50,43 @@ public class TestGraph {
 		System.out.println("Importing GTD");
 
 		GraphImporterExcel imp = new GraphImporterExcel();
-//		imp.importFromExcel("test2.xlsx", dg);
-		 imp.importFromExcel(
-		 "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
+		// imp.importFromExcel("test2.xlsx", dg);
+		// imp.importFromExcel(
+		// "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
+		imp.importFromExcel(
+				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
+				dg);
+
+		imp.importFromExcel(
+				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
+				dg);
+
+		imp.importFromExcel(
+				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_70to89_1213dist.xlsx",
+				dg);
 
 		System.out.println((System.currentTimeMillis() - startTime) / 1000);
-		
-		int mb = 1024 * 1024; 
-        Runtime instance = Runtime.getRuntime();
-        System.out.println("***** Heap utilization statistics [MB] *****\n");
-        System.out.println("Total Memory: " + instance.totalMemory() / mb);
-        System.out.println("Free Memory: " + instance.freeMemory() / mb);
-        System.out.println("Used Memory: "
-                + (instance.totalMemory() - instance.freeMemory()) / mb);
-        System.out.println("Max Memory: " + instance.maxMemory() / mb);
+
+		int mb = 1024 * 1024;
+		Runtime instance = Runtime.getRuntime();
+		System.out.println("***** Heap utilization statistics [MB] *****\n");
+		System.out.println("Total Memory: " + instance.totalMemory() / mb);
+		System.out.println("Free Memory: " + instance.freeMemory() / mb);
+		System.out.println("Used Memory: "
+				+ (instance.totalMemory() - instance.freeMemory()) / mb);
+		System.out.println("Max Memory: " + instance.maxMemory() / mb);
 
 		iCC = imp.getIndexCountryCode();
 		iCN = imp.getIndexCorpName();
 		iGN = imp.getIndexGroupName();
 		iID = imp.getIndexID();
 
-//		SubgraphMatcher matcher = new SubgraphMatcher(dg, iID);
-//		matcher.importIndex(iCC, "COUNTRY_CODE");
-//		matcher.importDoubleIndex(iCN, "CORPORATION_NAME");
-//		matcher.importIndex(iGN, "GROUP_NAME");
-//		matcher.importMainIndex(iID);
-		
+		// SubgraphMatcher matcher = new SubgraphMatcher(dg, iID);
+		// matcher.importIndex(iCC, "COUNTRY_CODE");
+		// matcher.importDoubleIndex(iCN, "CORPORATION_NAME");
+		// matcher.importIndex(iGN, "GROUP_NAME");
+		// matcher.importMainIndex(iID);
+
 		MyQuery q = new MyQuery(dg);
 		q.importIndex(iCC, "COUNTRY_CODE");
 		q.importDoubleIndex(iCN, "CORPORATION_NAME");
@@ -83,8 +94,8 @@ public class TestGraph {
 		q.importMainIndex(iID);
 
 		SubgraphMatcher matcher = new SubgraphMatcher(q);
-//		matcher.testDiamondQuery();
-//		matcher.testAggregationQuery();
+		// matcher.testDiamondQuery();
+		// matcher.testAggregationQuery();
 
 		// GraphImporterText gimp = new GraphImporterText(dg);
 		// gimp.importGraph("Data06_12.txt");
@@ -92,17 +103,10 @@ public class TestGraph {
 		// imp.importFromExcel("C:\\Users\\Sigma\\Desktop\\GTD06_12Subset.xlsx",
 		// dg);
 
-		// imp.importFromExcel(
-		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
-		// dg);
 		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
-		// imp.importFromExcel(
-		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
-		// dg);
+
 		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
-		// imp.importFromExcel(
-		// "C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_70to89_1213dist.xlsx",
-		// dg);
+
 		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
 		// System.out.println("Number of vertices: " + dg.vertexSet().size());
 		// System.out.println("Number of edges: " + dg.edgeSet().size());
@@ -111,19 +115,20 @@ public class TestGraph {
 		// SearchTester search = new SearchTester();
 		// search.test();
 
-//		GmlExporter<PropertyVertex, PropertyEdge> ge = new GmlExporter<PropertyVertex, PropertyEdge>();
-//
-//		System.out.println("Writing to file...");
-//		try {
-//			ge.setPrintLabels(3);
-//			ge.export(new FileWriter("changethis.gml"), dg);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-////
+		// GmlExporter<PropertyVertex, PropertyEdge> ge = new
+		// GmlExporter<PropertyVertex, PropertyEdge>();
+		//
+		// System.out.println("Writing to file...");
+		// try {
+		// ge.setPrintLabels(3);
+		// ge.export(new FileWriter("changethis.gml"), dg);
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		// //
 		System.out.println("Vertices: " + dg.vertexSet().size());
 		System.out.println("Done!");
-		
+
 	}
 
 	public Set<PropertyVertex> getAdjacentVertices(PropertyVertex v,
