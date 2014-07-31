@@ -23,8 +23,8 @@ public class PropertyVertex {
 		properties.put("vID", vID);
 		tag = vID + "";
 	}
-	
-	public PropertyVertex(String tag){
+
+	public PropertyVertex(String tag) {
 		this.tag = tag;
 		if (!tag.contains(":"))
 			properties.put("vID", Long.parseLong(tag));
@@ -83,37 +83,39 @@ public class PropertyVertex {
 		return (long) properties.get("vID");
 	}
 
-	public String getTag(){
+	public String getTag() {
 		return tag;
 	}
-	
-	public void setTag(String newTag){
+
+	public void setTag(String newTag) {
 		tag = newTag;
 	}
+
 	public String toString() {
 		String temp;
 		StringBuilder s = new StringBuilder();
-		s.append(labels.toString());
-		s.append(properties.toString()); //for printing complete file
-		
-//		if (labels.contains("TGROUP"))
-//			s.append(properties.get("GROUP_NAME"));
-//		else if(labels.contains("INCIDENT"))
-//			s.append(properties.get("vID"));
-//		else if (labels.contains("TARGET"))
-//			s.append(properties.get("TARGET_NAME"));
-//		else if (labels.contains("CORPORATION")){
-//			temp = properties.get("CORPORATION_NAME").toString();
-//			if (!temp.contains("\""))
-//				s.append(temp);
-//			else
-//				s.append("ERROR");
-//		} else
-//			s.append(tag);
-		
-//		s.append(properties.get("vID"));
-		
-//		s.append(tag);
+		// s.append(labels.toString());
+		// s.append(properties.toString()); //for printing complete file
+
+		if (labels.contains("TGROUP"))
+			s.append(properties.get("GROUP_NAME"));
+		else if (labels.contains("INCIDENT"))
+			s.append(properties.get("vID"));
+		else if (labels.contains("TARGET"))
+			s.append(properties.get("TARGET_NAME"));
+		else if (labels.contains("CORPORATION")) {
+			temp = properties.get("CORPORATION_NAME").toString() + ":"
+					+ properties.get("NATIONALITY").toString();
+			if (!temp.contains("\""))
+				s.append(temp);
+			else
+				s.append("ERROR");
+		} else
+			s.append(tag);
+
+		// s.append(properties.get("vID"));
+
+		// s.append(tag);
 
 		return s.toString();
 	}

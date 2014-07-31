@@ -17,16 +17,21 @@ public class SubgraphMatcher {
 	private static final boolean INCOMING = false;
 
 	Map<String, Map<?, HashSet<PropertyVertex>>> indexes = new HashMap<String, Map<?, HashSet<PropertyVertex>>>();
-	Map<String, Map<?, HashMap<String, PropertyVertex>>> doubleIndexes = new HashMap<String, Map<?, HashMap<String, PropertyVertex>>>();
+	Map<String, Map<String, HashMap<String, PropertyVertex>>> doubleIndexes = new HashMap<String, Map<String, HashMap<String, PropertyVertex>>>();
 
 	HashMap<Long, PropertyVertex> mainIndex;
 
 	DirectedGraph<PropertyVertex, PropertyEdge> g;
+	MyQuery query;
 
 	public SubgraphMatcher(DirectedGraph<PropertyVertex, PropertyEdge> g,
 			HashMap<Long, PropertyVertex> mainIndex) {
 		this.g = g;
 		this.mainIndex = mainIndex;
+	}
+
+	public SubgraphMatcher(MyQuery query) {
+		this.query = query;
 	}
 
 	public void test() {
@@ -84,18 +89,18 @@ public class SubgraphMatcher {
 		int intVal2, intVal3;
 		HashMap<PropertyVertex, HashSet<PropertyVertex>> ansMap = new HashMap<PropertyVertex, HashSet<PropertyVertex>>();
 		key1 = "GROUP_NAME";
-		value1 = "Maoists";
+		value1 = "Taliban";
 		queryGraph.addVertex(v1);
 		ansMap.put(v1, getVerticesByValue(key1, value1));
 		key2 = "COUNTRY_CODE";
-		intVal2 = 141;
+		intVal2 = 4;
 		v2.addProperty(key1, intVal2);
 		queryGraph.addVertex(v2);
 		ansMap.put(v2, getVerticesByValue(key2, intVal2));
 		edge12 = "PERPETRATED";
 		queryGraph.addEdge(v1, v2).addLabel(edge12);
 		key3 = "COUNTRY_CODE";
-		intVal3 = 141;
+		intVal3 = 4;
 		v3.addProperty(key3, intVal3);
 		queryGraph.addVertex(v3);
 		ansMap.put(v3, getVerticesByValue(key3, intVal3));
@@ -120,7 +125,25 @@ public class SubgraphMatcher {
 			e.printStackTrace();
 		}
 	}
+	
+	public void testDiamondQuery() {
+		Property p1 = new Property() , p2 = new Property(), p3 = new Property(), p4 = new Property();
+		String edge12, edge13, edge24, edge34;
+		p1.set("GROUP_NAME", "Taliban");
+		p2.set("COUNTRY_CODE", 4);
+		p3.set("COUNTRY_CODE", 4);
+		p4.set("CORPORATION_NAME", "School");
+		edge12 = "PERPETRATED";
+		edge13 = "PERPETRATED";
+		edge34 = "TARGET_CORPORATION";
+		edge24 = "TARGET_CORPORATION";
+		query.diamondQuery(p1, p2, p3, p4, edge12, edge24, edge13, edge34);
+	}
 
+	public void testAggregationQuery(){
+		System.out.println(query.aggregationQuery("WEAPON_TYPE_1", "Melee"));
+	}
+	
 	public void testIsomorphism() {
 		MyQuery query = new MyQuery(g);
 		Scanner kb = new Scanner(System.in);
@@ -154,7 +177,7 @@ public class SubgraphMatcher {
 		indexes.put(indexedOn, index);
 	}
 	
-	public void importDoubleIndex(Map<Object, HashMap<String, PropertyVertex>> doubleIndex, String indexedOn){
+	public void importDoubleIndex(Map<String, HashMap<String, PropertyVertex>> doubleIndex, String indexedOn){
 		doubleIndexes.put(indexedOn, doubleIndex);
 	}
 
@@ -166,9 +189,8 @@ public class SubgraphMatcher {
 		if (value != null) {
 			if (indexes.containsKey(key))
 				return indexes.get(key).get(value);
-			else if (doubleIndexes.containsKey(key)){
-				return (HashSet<PropertyVertex>) doubleIndexes.get(key).get(value).values();
-			}
+			else if (doubleIndexes.containsKey(key) && (doubleIndexes.get(key).get(value) != null))
+				return new HashSet<PropertyVertex>(doubleIndexes.get(key).get(value).values());
 			else	
 				return new HashSet<PropertyVertex>();
 		} else {
@@ -179,63 +201,16 @@ public class SubgraphMatcher {
 				}
 				return toReturn;
 			} else if (doubleIndexes.containsKey(key)){
-				
+				HashMap<String, PropertyVertex> tempMap;
+				HashSet<PropertyVertex> toReturn = new HashSet<PropertyVertex>();
+				for (String gname : doubleIndexes.get(key).keySet()){
+					tempMap = doubleIndexes.get(key).get(gname);
+					toReturn.addAll(tempMap.values());
+				}
+				return toReturn;
 			}
-				return new HashSet<PropertyVertex>();
+			return new HashSet<PropertyVertex>();
 		}
 	}
 
-	// public HashSet<PropertyEdge> getSuitableEdges(Set<PropertyVertex> set1,
-	// Set<PropertyVertex> set2, String edgeLabel){
-	// HashSet<PropertyEdge> edgesToReturn = new HashSet<PropertyEdge>();
-	// Set<PropertyEdge> edgesToExplore;
-	// Set<PropertyVertex> adjacentVertices;
-	// PropertyEdge edge;
-	// if (set1.size() <= set2.size()){
-	// for (PropertyVertex v1 : set1){
-	// adjacentVertices = getAdjacentVertices(v1, OUTGOING);
-	// for (PropertyVertex v2 : adjacentVertices){
-	// edge = g.getEdge(v1, v2);
-	// if ((edge != null) && (edge.getLabels().contains(edgeLabel))){
-	// edgesToReturn.add(edge);
-	// }
-	// }
-	// }
-	// }else{
-	// for (PropertyVertex v1 : set2){
-	// adjacentVertices = getAdjacentVertices(v1, INCOMING);
-	// for (PropertyVertex v2 : adjacentVertices){
-	// edge = g.getEdge(v1, v2);
-	// if ((edge != null) && (edge.getLabels().contains(edgeLabel))){
-	// edgesToReturn.add(edge);
-	// }
-	// }
-	// }
-	// }
-	//
-	// return edgesToReturn;
-	// }
-
-	public void printMatches(Set<PropertyEdge> edgeset1,
-			Set<PropertyEdge> edgeset2) {
-
-	}
-
-//	private Set<PropertyVertex> getAdjacentVertices(PropertyVertex rootV,
-//			boolean inOut) {
-//		Set<PropertyVertex> adjSet = new HashSet<PropertyVertex>();
-//		Set<PropertyEdge> edgeSet;
-//		if (inOut == OUTGOING) {
-//			edgeSet = g.outgoingEdgesOf(rootV);
-//			for (PropertyEdge e : edgeSet) {
-//				adjSet.add(g.getEdgeTarget(e));
-//			}
-//		} else {
-//			edgeSet = g.incomingEdgesOf(rootV);
-//			for (PropertyEdge e : edgeSet) {
-//				adjSet.add(g.getEdgeSource(e));
-//			}
-//		}
-//		return adjSet;
-//	}
 }

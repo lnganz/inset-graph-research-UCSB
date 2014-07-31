@@ -6,6 +6,7 @@ import ganz.lennon.gtdgraph.PropertyVertex;
 import java.io.*;
 import java.util.*;
 
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.*;
 import org.apache.poi.xssf.usermodel.*;
@@ -19,7 +20,7 @@ public class GraphImporterExcel {
 	HashMap<String, PropertyVertex> addedGroups = new HashMap<String, PropertyVertex>(1000);
 	HashMap<String, PropertyVertex> addedTargets = new HashMap<String, PropertyVertex>(1000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByCountryCode = new HashMap<Object, HashSet<PropertyVertex>>(10000);
-	HashMap<Object, HashMap<String, PropertyVertex>> indexedByCorpNameAndNat = new HashMap<Object, HashMap<String, PropertyVertex>>(1000);
+	HashMap<String, HashMap<String, PropertyVertex>> indexedByCorpNameAndNat = new HashMap<String, HashMap<String, PropertyVertex>>(1000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByGroupName = new HashMap<Object, HashSet<PropertyVertex>>(1000);
 	HashMap<Object, HashSet<PropertyVertex>> indexedByYear = new HashMap<Object, HashSet<PropertyVertex>>(1000);
 	HashMap<Long, PropertyVertex> indexedByID = new HashMap<Long, PropertyVertex>(1000);
@@ -29,12 +30,33 @@ public class GraphImporterExcel {
 	public boolean importFromExcel(String filename, DirectedGraph<PropertyVertex, PropertyEdge> graph) {
 
 		try {
+
+			int mb = 1024 * 1024; 
+	        Runtime instance = Runtime.getRuntime();
+	        System.out.println("***** Heap utilization statistics [MB] *****\n");
+	        System.out.println("Total Memory: " + instance.totalMemory() / mb);
+	        System.out.println("Free Memory: " + instance.freeMemory() / mb);
+	        System.out.println("Used Memory: "
+	                + (instance.totalMemory() - instance.freeMemory()) / mb);
+	        System.out.println("Max Memory: " + instance.maxMemory() / mb);
+
+			
 			FileInputStream file = new FileInputStream(new File(filename));
 
 			XSSFWorkbook wb = new XSSFWorkbook(file);
-
+			
 			Sheet sheet = wb.getSheetAt(0);
+			
+			 
+	        instance = Runtime.getRuntime();
+	        System.out.println("***** Heap utilization statistics [MB] *****\n");
+	        System.out.println("Total Memory: " + instance.totalMemory() / mb);
+	        System.out.println("Free Memory: " + instance.freeMemory() / mb);
+	        System.out.println("Used Memory: "
+	                + (instance.totalMemory() - instance.freeMemory()) / mb);
+	        System.out.println("Max Memory: " + instance.maxMemory() / mb);
 
+	        
 			int rowStart = sheet.getFirstRowNum() + 1;
 			int rowEnd = sheet.getLastRowNum();
 			int lastColumn;
@@ -55,6 +77,8 @@ public class GraphImporterExcel {
 			
 			for (int rowNum = rowStart; rowNum <= rowEnd; rowNum++) { // while there are more rows
 				
+				if (rowNum % 200 == 0)
+					System.out.println(rowNum + " rows added");
 				Row r = sheet.getRow(rowNum); // start of next row
 
 				lastColumn = r.getLastCellNum();
@@ -247,13 +271,13 @@ public class GraphImporterExcel {
 
 					cell = r.getCell(++cn); // Nationality code
 
-					if (cell != null){
+					if (cell != null){ //NATIONALITY STRING, SET UP CORP&TARGET
 						if (!cell.getStringCellValue().equals(".")){
 							tempStr = cell.getStringCellValue(); //Nationality
 							
 							if (!curCorp.equals("")){
-								unknown = curCorp.equals("Unknown"); //THIS IS VERY UNFINISHED!!!!!!
-								if (!unknown && addedCorps.containsKey(curCorp)) { //NEED MORE CHECKS TODO d
+								unknown = curCorp.equals("Unknown");
+								if (!unknown && addedCorps.containsKey(curCorp)) {
 									if (addedCorps.get(curCorp).containsKey(tempStr))
 										vCorp = addedCorps.get(curCorp).get(tempStr);
 									else{
@@ -262,6 +286,7 @@ public class GraphImporterExcel {
 										graph.addVertex(vCorp);
 										vCorp.addProperty("CORPORATION_NAME", curCorp);
 										vCorp.addProperty("NATIONALITY", tempStr);
+										vCorp.addLabel("CORPORATION");
 										addedCorps.get(curCorp).put(tempStr, vCorp);
 										indexedByCorpNameAndNat.get(curCorp).put(tempStr, vCorp);
 									}
@@ -289,20 +314,20 @@ public class GraphImporterExcel {
 							
 							unknown = curTarget.equals("Unknown");
 							if (!unknown && addedTargets.containsKey(curTarget)) {
-								v2 = addedTargets.get(curTarget);
+								vTarget = addedTargets.get(curTarget);
 							} else {
-								v2 = new PropertyVertex(++numVerticesAdded);
-								graph.addVertex(v2);
-								indexedByID.put((long) numVerticesAdded, v2);
+								vTarget = new PropertyVertex(++numVerticesAdded);
+								graph.addVertex(vTarget);
+								indexedByID.put((long) numVerticesAdded, vTarget);
 								if (!unknown)
-									addedTargets.put(curTarget, v2);
-								v2.addProperty("TARGET_NAME", curTarget);
-								v2.addLabel("TARGET");
+									addedTargets.put(curTarget, vTarget);
+								vTarget.addProperty("TARGET_NAME", curTarget);
+								vTarget.addLabel("TARGET");
 							}
-							e = graph.addEdge(v1, v2);
+							e = graph.addEdge(v1, vTarget);
 							e.addLabel("TARGET");
-							if (v3 != null && !graph.containsEdge(v3, v2)){
-							e = graph.addEdge(v3, v2);
+							if (v3 != null && !graph.containsEdge(vTarget, v3)){
+							e = graph.addEdge(vTarget, v3);
 							e.addLabel("SUBTARGET_OF");
 							}
 						}
@@ -744,6 +769,23 @@ public class GraphImporterExcel {
 				
 				file.close();
 			}
+			 // get Runtime instance
+	        instance = Runtime.getRuntime();
+	 
+	        System.out.println("***** Heap utilization statistics [MB] *****\n");
+	 
+	        // available memory
+	        System.out.println("Total Memory: " + instance.totalMemory() / mb);
+	 
+	        // free memory
+	        System.out.println("Free Memory: " + instance.freeMemory() / mb);
+	 
+	        // used memory
+	        System.out.println("Used Memory: "
+	                + (instance.totalMemory() - instance.freeMemory()) / mb);
+	 
+	        // Maximum available memory
+	        System.out.println("Max Memory: " + instance.maxMemory() / mb);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -754,7 +796,7 @@ public class GraphImporterExcel {
 		return indexedByCountryCode;
 	}
 	
-	public HashMap<Object, HashMap<String, PropertyVertex>> getIndexCorpName(){
+	public HashMap<String, HashMap<String, PropertyVertex>> getIndexCorpName(){
 		return indexedByCorpNameAndNat;
 	}
 	

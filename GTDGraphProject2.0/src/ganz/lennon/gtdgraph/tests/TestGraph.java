@@ -13,6 +13,7 @@ import ganz.lennon.gtdgraph.PropertyVertex;
 import ganz.lennon.gtdgraph.io.GraphImporterExcel;
 import ganz.lennon.gtdgraph.io.GraphImporterText;
 import ganz.lennon.gtdgraph.io.TableLoader;
+import ganz.lennon.gtdgraph.query.MyQuery;
 import ganz.lennon.gtdgraph.search.ReachabilityBFS;
 import ganz.lennon.gtdgraph.search.SubgraphMatcher;
 
@@ -31,7 +32,7 @@ public class TestGraph {
 										// subtypes
 		HashMap<Object, HashSet<PropertyVertex>> iCC;// reverse indexed by
 														// Country Code
-		HashMap<Object, HashMap<String, PropertyVertex>> iCN;// Corp name
+		HashMap<String, HashMap<String, PropertyVertex>> iCN;// Corp name
 		HashMap<Object, HashSet<PropertyVertex>> iGN;// Group name
 		HashMap<Long, PropertyVertex> iID; // vID
 		DirectedGraph<PropertyVertex, PropertyEdge> dg = new DirectedMultigraph<PropertyVertex, PropertyEdge>(
@@ -49,27 +50,41 @@ public class TestGraph {
 		System.out.println("Importing GTD");
 
 		GraphImporterExcel imp = new GraphImporterExcel();
-		imp.importFromExcel("test2.xlsx", dg);
-//		 imp.importFromExcel(
-//		 "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
+//		imp.importFromExcel("test2.xlsx", dg);
+		 imp.importFromExcel(
+		 "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
 
 		System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		
+		int mb = 1024 * 1024; 
+        Runtime instance = Runtime.getRuntime();
+        System.out.println("***** Heap utilization statistics [MB] *****\n");
+        System.out.println("Total Memory: " + instance.totalMemory() / mb);
+        System.out.println("Free Memory: " + instance.freeMemory() / mb);
+        System.out.println("Used Memory: "
+                + (instance.totalMemory() - instance.freeMemory()) / mb);
+        System.out.println("Max Memory: " + instance.maxMemory() / mb);
 
 		iCC = imp.getIndexCountryCode();
 		iCN = imp.getIndexCorpName();
 		iGN = imp.getIndexGroupName();
 		iID = imp.getIndexID();
 
-		SubgraphMatcher matcher = new SubgraphMatcher(dg, iID);
-		matcher.importIndex(iCC, "COUNTRY_CODE");
-//		matcher.importIndex(iCN, "CORPORATION_NAME");
-		matcher.importIndex(iGN, "GROUP_NAME");
-		matcher.importMainIndex(iID);
+//		SubgraphMatcher matcher = new SubgraphMatcher(dg, iID);
+//		matcher.importIndex(iCC, "COUNTRY_CODE");
+//		matcher.importDoubleIndex(iCN, "CORPORATION_NAME");
+//		matcher.importIndex(iGN, "GROUP_NAME");
+//		matcher.importMainIndex(iID);
+		
+		MyQuery q = new MyQuery(dg);
+		q.importIndex(iCC, "COUNTRY_CODE");
+		q.importDoubleIndex(iCN, "CORPORATION_NAME");
+		q.importIndex(iGN, "GROUP_NAME");
+		q.importMainIndex(iID);
 
-		// System.out.println(iCC.toString());
-		// imp.writeIndexToFile(iCC, "COUNTRY_CODE");
-//		matcher.testDiamond();
-		// matcher.testIsomorphism();
+		SubgraphMatcher matcher = new SubgraphMatcher(q);
+//		matcher.testDiamondQuery();
+//		matcher.testAggregationQuery();
 
 		// GraphImporterText gimp = new GraphImporterText(dg);
 		// gimp.importGraph("Data06_12.txt");
@@ -101,12 +116,14 @@ public class TestGraph {
 //		System.out.println("Writing to file...");
 //		try {
 //			ge.setPrintLabels(3);
-//			ge.export(new FileWriter("Test06_12.txt"), dg);
+//			ge.export(new FileWriter("changethis.gml"), dg);
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-//
+////
+		System.out.println("Vertices: " + dg.vertexSet().size());
 		System.out.println("Done!");
+		
 	}
 
 	public Set<PropertyVertex> getAdjacentVertices(PropertyVertex v,
