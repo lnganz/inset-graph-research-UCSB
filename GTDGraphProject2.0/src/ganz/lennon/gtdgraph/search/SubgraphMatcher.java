@@ -131,7 +131,7 @@ public class SubgraphMatcher {
 		String edge12, edge13, edge24, edge34;
 		p1.set("GROUP_NAME", "Taliban");
 		p2.set("COUNTRY_CODE", 4);
-		p3.set("COUNTRY_CODE", 4);
+		p3.set("COUNTRY_CODE", null);
 		p4.set("CORPORATION_NAME", "School");
 		edge12 = "PERPETRATED";
 		edge13 = "PERPETRATED";
@@ -142,6 +142,9 @@ public class SubgraphMatcher {
 
 	public void testAggregationQuery(){
 		System.out.println(query.aggregationQuery("WEAPON_TYPE_1", "Melee"));
+		System.out.println(query.findGreatest("#_WOUNDED_US"));
+		PropertyVertex v = query.mainIndex.get(Long.parseLong("200603220002"));
+		System.out.println(query.mainIndex.get(Long.parseLong("200603020001")).getValue("#_KILLED_US"));
 	}
 	
 	public void testIsomorphism() {

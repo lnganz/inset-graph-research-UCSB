@@ -18,7 +18,7 @@ public class MyQuery extends Query {
 
 	Map<String, Map<?, HashSet<PropertyVertex>>> indexes;
 	Map<String, Map<String, HashMap<String, PropertyVertex>>> doubleIndexes;
-	HashMap<Long, PropertyVertex> mainIndex;
+	public HashMap<Long, PropertyVertex> mainIndex;
 
 	public MyQuery(DirectedGraph<PropertyVertex, PropertyEdge> g) {
 		this.g = g;

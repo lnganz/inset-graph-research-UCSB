@@ -50,20 +50,20 @@ public class TestGraph {
 		System.out.println("Importing GTD");
 
 		GraphImporterExcel imp = new GraphImporterExcel();
-		// imp.importFromExcel("test2.xlsx", dg);
+		 imp.importFromExcel("test2.xlsx", dg);
 		// imp.importFromExcel(
 		// "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
-		imp.importFromExcel(
-				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
-				dg);
-
-		imp.importFromExcel(
-				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
-				dg);
-
-		imp.importFromExcel(
-				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_70to89_1213dist.xlsx",
-				dg);
+//		imp.importFromExcel(
+//				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_06to12_1213dist.xlsx",
+//				dg);
+//
+//		imp.importFromExcel(
+//				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_90to05_1213dist.xlsx",
+//				dg);
+//
+//		imp.importFromExcel(
+//				"C:\\Users\\Sigma\\Desktop\\gtd_201312dist\\gtd_70to89_1213dist.xlsx",
+//				dg);
 
 		System.out.println((System.currentTimeMillis() - startTime) / 1000);
 
@@ -81,39 +81,23 @@ public class TestGraph {
 		iGN = imp.getIndexGroupName();
 		iID = imp.getIndexID();
 
-		// SubgraphMatcher matcher = new SubgraphMatcher(dg, iID);
-		// matcher.importIndex(iCC, "COUNTRY_CODE");
-		// matcher.importDoubleIndex(iCN, "CORPORATION_NAME");
-		// matcher.importIndex(iGN, "GROUP_NAME");
-		// matcher.importMainIndex(iID);
-
 		MyQuery q = new MyQuery(dg);
 		q.importIndex(iCC, "COUNTRY_CODE");
 		q.importDoubleIndex(iCN, "CORPORATION_NAME");
 		q.importIndex(iGN, "GROUP_NAME");
 		q.importMainIndex(iID);
-
-		SubgraphMatcher matcher = new SubgraphMatcher(q);
-		// matcher.testDiamondQuery();
-		// matcher.testAggregationQuery();
+//
+//		SubgraphMatcher matcher = new SubgraphMatcher(q);
+//		matcher.testDiamondQuery();
+//		matcher.testAggregationQuery();
 
 		// GraphImporterText gimp = new GraphImporterText(dg);
 		// gimp.importGraph("Data06_12.txt");
 
-		// imp.importFromExcel("C:\\Users\\Sigma\\Desktop\\GTD06_12Subset.xlsx",
-		// dg);
-
-		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
-
-		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
-
-		// System.out.println((System.currentTimeMillis() - startTime) / 1000);
-		// System.out.println("Number of vertices: " + dg.vertexSet().size());
-		// System.out.println("Number of edges: " + dg.edgeSet().size());
-
 		// System.out.println("Import Successful!");
-		// SearchTester search = new SearchTester();
-		// search.test();
+		 SearchTester search = new SearchTester();
+		 search.test();
+//		 search.repeatedTest();
 
 		// GmlExporter<PropertyVertex, PropertyEdge> ge = new
 		// GmlExporter<PropertyVertex, PropertyEdge>();

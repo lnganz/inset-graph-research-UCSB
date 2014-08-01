@@ -32,7 +32,7 @@ public class SearchTester {
 		this.g = g;
 	}
 
-	private void repeatedTest() {
+	public void repeatedTest() {
 		ArrayList<PropertyVertex> vertices;
 		int numVertices, numTrials;
 		double edgeFactor, startEF, endEF, incrementEF;
@@ -40,7 +40,7 @@ public class SearchTester {
 			FileWriter out = new FileWriter("SearchData.txt");
 
 			Scanner kb = new Scanner(System.in);
-			// while (going) {
+//			 while (going) {
 			System.out.print("Enter number of vertices: ");
 			numVertices = kb.nextInt();
 			System.out.print("Enter starting edge probability: ");
@@ -86,21 +86,42 @@ public class SearchTester {
 	}
 
 	public void test() {
-		boolean going = true;
-		int numVertices;
-		double startEF;
-		ArrayList<PropertyVertex> vertices;
-		PropertyVertex v1, v2, v3, v4;
-		String filename;
-		repeatedTest();
-		// reset();
-//		Scanner kb = new Scanner(System.in);
-//		System.out.print("Enter number of vertices: ");
-//		numVertices = kb.nextInt();
-//		System.out.print("Enter starting edge probability: ");
-//		startEF = kb.nextDouble();
-//		vertices = constructErdosGraph(numVertices, startEF);
-
+		int numVertices, numTrials;
+		double edgeFactor, startEF, endEF, incrementEF;
+		ArrayList<PropertyVertex> vertices, verticesAdded;
+		Scanner kb = new Scanner(System.in);
+		System.out.print("Enter initial number of vertices: ");
+		numVertices = kb.nextInt();
+		System.out.print("Enter edge probability: ");
+		startEF = kb.nextDouble();
+		System.out.print("Enter final number of vertices: ");
+		endEF = kb.nextDouble();
+		System.out.print("Enter increment: ");
+		incrementEF = kb.nextDouble();
+		System.out.println("Enter # trials for each: ");
+		numTrials = kb.nextInt();
+		ArrayList<Double> averages;
+		double average;
+		vertices = constructErdosGraph(numVertices, startEF);
+		for (double i = numVertices; i <= endEF; i += incrementEF) {
+			averages = new ArrayList<Double>();
+			System.out.println();
+			System.out.println("Vertices: " + g.vertexSet().size());
+			System.out.println("Edges: " + g.edgeSet().size());
+			for (int j = 0; j < numTrials; j++) {
+				if (j % 10 == 0) {
+					System.out.println("Processing...");
+				}
+				averages.add(consoleTest(vertices));
+			}
+			average = calculateAverage(averages);
+//			out.append("Factor: " + i + "\nAverage: " + average + "\n");
+			System.out.println("Average time with " + i + " vertices: "
+					+ average);
+			increaseSize(vertices, (int)incrementEF);
+			
+		}
+		
 	}
 
 	@SuppressWarnings("unused")
@@ -122,13 +143,52 @@ public class SearchTester {
 			for (int j = 0; j < vertices.size(); j++) {
 				if (i != j) {
 					v2 = vertices.get(j);
-					if (Math.random() < densityFactor)
+					if (Math.random() <= densityFactor)
 						g.addEdge(v1, v2);
 				}
 			}
 		}
 	}
+	
+	private void addNewEdges(ArrayList<PropertyVertex> vertices, ArrayList<PropertyVertex> verticesAdded){
+		double density = g.edgeSet().size()/(double)vertices.size();
+		System.out.println(g.edgeSet().size());
+		int edgesToAdd = (int)((density*verticesAdded.size()));
+		int edgesAdded = 0;
+		PropertyVertex v1, v2;
+		while(edgesAdded < edgesToAdd){
+			v1 = randomVertex(verticesAdded);
+			v2 = randomVertex(vertices);
+			if (Math.random() < .5){
+				if (!g.containsEdge(v1, v2)){
+					g.addEdge(v1, v2);
+					edgesAdded++;
+				}
+			} else {
+				if (!g.containsEdge(v2, v1)){
+					g.addEdge(v2, v1);
+					edgesAdded++;
+				}
+			}
+		}
+	}
+	
+	private ArrayList<PropertyVertex> addVertices(int numNodesToAdd){
+		ArrayList<PropertyVertex> verticesAdded = new ArrayList<PropertyVertex>(numNodesToAdd);
+		PropertyVertex newVertex;
+		for (int i = 0; i < numNodesToAdd; i++){
+			newVertex = new PropertyVertex(i);
+			g.addVertex(newVertex);
+			verticesAdded.add(newVertex);
+		}
+		return verticesAdded;
+	}
 
+	private void increaseSize(ArrayList<PropertyVertex> vertices, int numToAdd){
+		ArrayList<PropertyVertex> added = addVertices(numToAdd);
+		addNewEdges(vertices, added);
+	}
+	
 	private void increaseDensity(ArrayList<PropertyVertex> vertices, double incrementFactor) {
 		int numEdgesToAdd = (int) (vertices.size() * incrementFactor);
 		int numEdgesAdded;
@@ -273,7 +333,6 @@ public class SearchTester {
 			out.close();
 			System.out.println("Writing complete");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
