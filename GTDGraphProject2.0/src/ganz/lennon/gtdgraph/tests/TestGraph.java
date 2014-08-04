@@ -47,10 +47,10 @@ public class TestGraph {
 														// names into array
 
 		double startTime = System.currentTimeMillis();
-		System.out.println("Importing GTD");
+//		System.out.println("Importing GTD");
 
-		GraphImporterExcel imp = new GraphImporterExcel();
-		 imp.importFromExcel("test2.xlsx", dg);
+//		GraphImporterExcel imp = new GraphImporterExcel();
+//		 imp.importFromExcel("test2.xlsx", dg);
 		// imp.importFromExcel(
 		// "C:\\Users\\Lennon\\Desktop\\gtd_06to12_1213dist.xlsx", dg);
 //		imp.importFromExcel(
@@ -76,19 +76,19 @@ public class TestGraph {
 				+ (instance.totalMemory() - instance.freeMemory()) / mb);
 		System.out.println("Max Memory: " + instance.maxMemory() / mb);
 
-		iCC = imp.getIndexCountryCode();
-		iCN = imp.getIndexCorpName();
-		iGN = imp.getIndexGroupName();
-		iID = imp.getIndexID();
-
-		MyQuery q = new MyQuery(dg);
-		q.importIndex(iCC, "COUNTRY_CODE");
-		q.importDoubleIndex(iCN, "CORPORATION_NAME");
-		q.importIndex(iGN, "GROUP_NAME");
-		q.importMainIndex(iID);
+//		iCC = imp.getIndexCountryCode();
+//		iCN = imp.getIndexCorpName();
+//		iGN = imp.getIndexGroupName();
+//		iID = imp.getIndexID();
 //
-		SubgraphMatcher matcher = new SubgraphMatcher(q);
-		matcher.testDiamondQuery();
+//		MyQuery q = new MyQuery(dg);
+//		q.importIndex(iCC, "COUNTRY_CODE");
+//		q.importDoubleIndex(iCN, "CORPORATION_NAME");
+//		q.importIndex(iGN, "GROUP_NAME");
+//		q.importMainIndex(iID);
+////
+//		SubgraphMatcher matcher = new SubgraphMatcher(q);
+//		matcher.testDiamondQuery();
 //		matcher.testAggregationQuery();
 
 		// GraphImporterText gimp = new GraphImporterText(dg);
@@ -96,7 +96,7 @@ public class TestGraph {
 
 		// System.out.println("Import Successful!");
 		 SearchTester search = new SearchTester();
-//		 search.test();
+		 search.test();
 //		 search.repeatedTest();
 
 		// GmlExporter<PropertyVertex, PropertyEdge> ge = new

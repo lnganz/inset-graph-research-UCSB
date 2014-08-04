@@ -36,52 +36,41 @@ public class SearchTester {
 		ArrayList<PropertyVertex> vertices;
 		int numVertices, numTrials;
 		double edgeFactor, startEF, endEF, incrementEF;
-		try {
-			FileWriter out = new FileWriter("SearchData.txt");
-
-			Scanner kb = new Scanner(System.in);
-//			 while (going) {
-			System.out.print("Enter number of vertices: ");
-			numVertices = kb.nextInt();
-			System.out.print("Enter starting edge probability: ");
-			startEF = kb.nextDouble();
-			System.out.print("Enter ending edge probability: ");
-			endEF = kb.nextDouble();
-			System.out.print("Enter increment value: ");
-			incrementEF = kb.nextDouble();
-			System.out.println("Enter # trials for each: ");
-			numTrials = kb.nextInt();
-			ArrayList<Double> averages;
-			double average;
-			vertices = constructErdosGraph(numVertices, startEF);
-			for (double i = startEF; i <= endEF; i += incrementEF) {
-				averages = new ArrayList<Double>();
-				System.out.println();
-				System.out.println("Vertices: " + g.vertexSet().size());
-				System.out.println("Edges: " + g.edgeSet().size());
-				for (int j = 0; j < numTrials; j++) {
-					// System.out.println("Edge Factor: " + i);
-					if (j % 10 == 0) {
-						System.out.println("Processing...");
-					}
-					
-//					reset();
-					// vertices = constructRandomGraph(numVertices, edgeFactor);
-//					vertices = constructErdosGraph(numVertices, i);
-					// System.out.println("New Graph: " + g.vertexSet().size()
-					// + " vertices");
-					// System.out.println("Enter output filename");
-					// filename = kb.next();
-					averages.add(consoleTest(vertices));
+		Scanner kb = new Scanner(System.in);
+		// while (going) {
+		System.out.print("Enter number of vertices: ");
+		numVertices = kb.nextInt();
+		System.out.print("Enter starting edge probability: ");
+		startEF = kb.nextDouble();
+		System.out.print("Enter ending edge probability: ");
+		endEF = kb.nextDouble();
+		System.out.print("Enter increment value: ");
+		incrementEF = kb.nextDouble();
+		System.out.println("Enter # trials for each: ");
+		numTrials = kb.nextInt();
+		ArrayList<Double> averages, averagesBFS, averagesBIBFS;
+		double average, averageBFS, averageBIBFS;
+		vertices = constructErdosGraph(numVertices, startEF);
+		for (double i = startEF; i <= endEF; i += incrementEF) {
+			averages = new ArrayList<Double>();
+			averagesBFS = new ArrayList<Double>();
+			averagesBIBFS = new ArrayList<Double>();
+			System.out.println();
+			System.out.println("Vertices: " + g.vertexSet().size());
+			System.out.println("Edges: " + g.edgeSet().size());
+			for (int j = 0; j < numTrials; j++) {
+				if (j % 10 == 0) {
+					System.out.println("Processing...");
 				}
-				average = calculateAverage(averages);
-				out.append("Factor: " + i + "\nAverage: " + average + "\n");
-				System.out.println("Average time with edge factor " + i + ": "
-						+ average);
-				increaseDensity(vertices, incrementEF);
+				averages.add(consoleTest2Results(vertices, averagesBFS,
+						averagesBIBFS));
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			average = calculateAverage(averages);
+			averageBFS = calculateAverage(averagesBFS);
+			averageBIBFS = calculateAverage(averagesBIBFS);
+			System.out.println("Average time with edge factor " + i + ": "
+					+ average);
+			increaseDensity(vertices, incrementEF);
 		}
 	}
 
@@ -100,11 +89,13 @@ public class SearchTester {
 		incrementEF = kb.nextDouble();
 		System.out.println("Enter # trials for each: ");
 		numTrials = kb.nextInt();
-		ArrayList<Double> averages;
-		double average;
+		ArrayList<Double> averages, averagesBFS, averagesBIBFS;
+		double average, averageBFS, averageBIBFS;
 		vertices = constructErdosGraph(numVertices, startEF);
 		for (double i = numVertices; i <= endEF; i += incrementEF) {
 			averages = new ArrayList<Double>();
+			averagesBFS = new ArrayList<Double>();
+			averagesBIBFS = new ArrayList<Double>();
 			System.out.println();
 			System.out.println("Vertices: " + g.vertexSet().size());
 			System.out.println("Edges: " + g.edgeSet().size());
@@ -112,16 +103,20 @@ public class SearchTester {
 				if (j % 10 == 0) {
 					System.out.println("Processing...");
 				}
-				averages.add(consoleTest(vertices));
+				averages.add(consoleTest2Results(vertices, averagesBFS, averagesBIBFS));
 			}
 			average = calculateAverage(averages);
-//			out.append("Factor: " + i + "\nAverage: " + average + "\n");
+			averageBFS = calculateAverage(averagesBFS);
+			averageBIBFS = calculateAverage(averagesBIBFS);
+			// out.append("Factor: " + i + "\nAverage: " + average + "\n");
 			System.out.println("Average time with " + i + " vertices: "
 					+ average);
-			increaseSize(vertices, (int)incrementEF);
-			
+			System.out.println("Average BFS: " + averageBFS);
+			System.out.println("Average BIBFS: " + averageBIBFS);
+			increaseSize(vertices, (int) incrementEF);
+
 		}
-		
+
 	}
 
 	@SuppressWarnings("unused")
@@ -149,23 +144,24 @@ public class SearchTester {
 			}
 		}
 	}
-	
-	private void addNewEdges(ArrayList<PropertyVertex> vertices, ArrayList<PropertyVertex> verticesAdded){
-		double density = g.edgeSet().size()/(double)vertices.size();
+
+	private void addNewEdges(ArrayList<PropertyVertex> vertices,
+			ArrayList<PropertyVertex> verticesAdded) {
+		double density = g.edgeSet().size() / (double) vertices.size();
 		System.out.println(g.edgeSet().size());
-		int edgesToAdd = (int)((density*verticesAdded.size()));
+		int edgesToAdd = (int) ((density * verticesAdded.size()));
 		int edgesAdded = 0;
 		PropertyVertex v1, v2;
-		while(edgesAdded < edgesToAdd){
+		while (edgesAdded < edgesToAdd) {
 			v1 = randomVertex(verticesAdded);
 			v2 = randomVertex(vertices);
-			if (Math.random() < .5){
-				if (!v1.equals(v2) && !g.containsEdge(v1, v2)){
+			if (Math.random() < .5) {
+				if (!v1.equals(v2) && !g.containsEdge(v1, v2)) {
 					g.addEdge(v1, v2);
 					edgesAdded++;
 				}
 			} else {
-				if (!v1.equals(v2) && !g.containsEdge(v2, v1)){
+				if (!v1.equals(v2) && !g.containsEdge(v2, v1)) {
 					g.addEdge(v2, v1);
 					edgesAdded++;
 				}
@@ -173,11 +169,12 @@ public class SearchTester {
 		}
 		vertices.addAll(verticesAdded);
 	}
-	
-	private ArrayList<PropertyVertex> addVertices(int numNodesToAdd){
-		ArrayList<PropertyVertex> verticesAdded = new ArrayList<PropertyVertex>(numNodesToAdd);
+
+	private ArrayList<PropertyVertex> addVertices(int numNodesToAdd) {
+		ArrayList<PropertyVertex> verticesAdded = new ArrayList<PropertyVertex>(
+				numNodesToAdd);
 		PropertyVertex newVertex;
-		for (int i = 0; i < numNodesToAdd; i++){
+		for (int i = 0; i < numNodesToAdd; i++) {
 			newVertex = new PropertyVertex(i);
 			g.addVertex(newVertex);
 			verticesAdded.add(newVertex);
@@ -185,12 +182,13 @@ public class SearchTester {
 		return verticesAdded;
 	}
 
-	private void increaseSize(ArrayList<PropertyVertex> vertices, int numToAdd){
+	private void increaseSize(ArrayList<PropertyVertex> vertices, int numToAdd) {
 		ArrayList<PropertyVertex> added = addVertices(numToAdd);
 		addNewEdges(vertices, added);
 	}
-	
-	private void increaseDensity(ArrayList<PropertyVertex> vertices, double incrementFactor) {
+
+	private void increaseDensity(ArrayList<PropertyVertex> vertices,
+			double incrementFactor) {
 		int numEdgesToAdd = (int) (vertices.size() * incrementFactor);
 		int numEdgesAdded;
 		PropertyVertex v1, v2;
@@ -199,7 +197,7 @@ public class SearchTester {
 			numEdgesAdded = 0;
 			while (numEdgesAdded < numEdgesToAdd) {
 				v2 = randomVertex(vertices);
-				if (!v1.equals(v2) && !g.containsEdge(v1, v2)){
+				if (!v1.equals(v2) && !g.containsEdge(v1, v2)) {
 					g.addEdge(v1, v2);
 					numEdgesAdded++;
 				}
@@ -404,8 +402,90 @@ public class SearchTester {
 		}
 		// System.out.println("Paths found: " + count);
 		if (count > 0) {
-//			avgToReturn = (bibfsSum / count) / (double) (bfsSum / count);
-			avgToReturn = (bfsSum / (double)count) / (bibfsSum /(double) count);
+			// avgToReturn = (bibfsSum / count) / (double) (bfsSum / count);
+			avgToReturn = (bfsSum / (double) count)
+					/ (bibfsSum / (double) count);
+			return avgToReturn;
+		} else
+			return -1;
+
+		// averageBFS = calculateAverageTime(timesBFS);
+		// System.out.println("BFS Average Time: " + averageBFS);
+		// averageBIBFS = calculateAverageTime(timesBIBFS);
+		// System.out.println("BIBFS Average Time: " + averageBIBFS);
+		// percentDifference = calculatePercentDifference(averageBFS,
+		// averageBIBFS);
+		// System.out.println("Average Percent Time: "
+		// + df.format((averageBIBFS / (double) averageBFS) * 100) + "%");
+	}
+
+	double consoleTest2Results(ArrayList<PropertyVertex> vertices,
+			ArrayList<Double> bfs, ArrayList<Double> bibfs) {
+		long t1, t2, averageBFS, averageBIBFS;
+		double percentDifference, avgToReturn;
+		PropertyVertex start, end;
+		ReachabilityBFS reach = new ReachabilityBFS(g);
+		ArrayList<Long> timesBFS = new ArrayList<Long>(30), timesBIBFS = new ArrayList<Long>(
+				30);
+		ArrayList<Integer> lengths = new ArrayList<Integer>(30);
+		int length = 0;
+		for (int i = 0; i < NUM_TESTS_CONSOLE; i++) {
+			start = randomVertex(vertices);
+			end = randomVertex(vertices);
+
+			if (i % 2 == 0) {
+				System.out.print("");
+				reach.pathLengthBFS(randomVertex(vertices),
+						randomVertex(vertices));
+
+				t1 = System.nanoTime();
+				length = reach.pathLengthBFS(start, end);
+				// System.out.println(reach.pathLengthBFS(start, end));
+				t1 = System.nanoTime() - t1;
+				// System.out.println("BFS Time: " + t1 + " ns");
+				timesBFS.add(t1);
+				lengths.add(length);
+
+				System.out.print("");
+				t2 = System.nanoTime();
+				reach.pathLengthBiBFS(start, end);
+				t2 = System.nanoTime() - t2;
+				timesBIBFS.add(t2);
+			} else {
+				System.out.print("");
+				reach.pathLengthBFS(randomVertex(vertices),
+						randomVertex(vertices));
+
+				t2 = System.nanoTime();
+				reach.pathLengthBiBFS(start, end);
+				t2 = System.nanoTime() - t2;
+				timesBIBFS.add(t2);
+
+				System.out.print("");
+				t1 = System.nanoTime();
+				length = reach.pathLengthBFS(start, end);
+				t1 = System.nanoTime() - t1;
+				timesBFS.add(t1);
+				lengths.add(length);
+			}
+		}
+
+		int count = 0;
+		long bfsSum = 0, bibfsSum = 0;
+		for (int i = 0; i < lengths.size(); i++) {
+			if (lengths.get(i) > 0) {
+				bfsSum += timesBFS.get(i);
+				bibfsSum += timesBIBFS.get(i);
+				count++;
+			}
+		}
+		// System.out.println("Paths found: " + count);
+		if (count > 0) {
+			// avgToReturn = (bibfsSum / count) / (double) (bfsSum / count);
+			avgToReturn = (bfsSum / (double) count)
+					/ (bibfsSum / (double) count);
+			bfs.add(bfsSum / (double) count);
+			bibfs.add(bibfsSum / (double) count);
 			return avgToReturn;
 		} else
 			return -1;

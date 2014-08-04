@@ -1,0 +1,175 @@
+0.0
+***** Heap utilization statistics [MB] *****
+
+Total Memory: 512
+Free Memory: 511
+Used Memory: 0
+Max Memory: 3641
+Enter initial number of vertices: 300
+Enter edge probability: .02
+Enter final number of vertices: 5000
+Enter increment: 300
+Enter # trials for each: 
+30
+
+Vertices: 300
+Edges: 1855
+Processing...
+Processing...
+Processing...
+Average time with 300.0 vertices: 4.958280750212934
+Average BFS: 16895.755105474338
+Average BIBFS: 3918.9106614413163
+1855
+
+Vertices: 600
+Edges: 3710
+Processing...
+Processing...
+Processing...
+Average time with 600.0 vertices: 10.645860931032104
+Average BFS: 35791.686691784445
+Average BIBFS: 3383.8290816112917
+3710
+
+Vertices: 900
+Edges: 5565
+Processing...
+Processing...
+Processing...
+Average time with 900.0 vertices: 14.61595123390551
+Average BFS: 61969.46738463388
+Average BIBFS: 4266.75313015269
+5565
+
+Vertices: 1200
+Edges: 7420
+Processing...
+Processing...
+Processing...
+Average time with 1200.0 vertices: 18.33260963199506
+Average BFS: 88659.65188072636
+Average BIBFS: 4838.05720535464
+7420
+
+Vertices: 1500
+Edges: 9275
+Processing...
+Processing...
+Processing...
+Average time with 1500.0 vertices: 21.134852683753827
+Average BFS: 114131.61876157539
+Average BIBFS: 5401.529176092
+9275
+
+Vertices: 1800
+Edges: 11130
+Processing...
+Processing...
+Processing...
+Average time with 1800.0 vertices: 24.22673450517768
+Average BFS: 140653.24958269636
+Average BIBFS: 5819.297471243368
+11130
+
+Vertices: 2100
+Edges: 12985
+Processing...
+Processing...
+Processing...
+Average time with 2100.0 vertices: 27.557954680742778
+Average BFS: 174848.98448552616
+Average BIBFS: 6363.273804916884
+12985
+
+Vertices: 2400
+Edges: 14840
+Processing...
+Processing...
+Processing...
+Average time with 2400.0 vertices: 29.94590567845607
+Average BFS: 202831.41809155224
+Average BIBFS: 6779.537587282945
+14840
+
+Vertices: 2700
+Edges: 16695
+Processing...
+Processing...
+Processing...
+Average time with 2700.0 vertices: 32.13267037183354
+Average BFS: 239044.7753474585
+Average BIBFS: 7459.647272927773
+16695
+
+Vertices: 3000
+Edges: 18550
+Processing...
+Processing...
+Processing...
+Average time with 3000.0 vertices: 34.60442915675857
+Average BFS: 279488.834343535
+Average BIBFS: 8089.635640079519
+18550
+
+Vertices: 3300
+Edges: 20405
+Processing...
+Processing...
+Processing...
+Average time with 3300.0 vertices: 36.94525516720636
+Average BFS: 322323.5051240523
+Average BIBFS: 8748.281386230286
+20405
+
+Vertices: 3600
+Edges: 22260
+Processing...
+Processing...
+Processing...
+Average time with 3600.0 vertices: 39.318826649978135
+Average BFS: 355575.61810436717
+Average BIBFS: 9068.8258104426
+22260
+
+Vertices: 3900
+Edges: 24115
+Processing...
+Processing...
+Processing...
+Average time with 3900.0 vertices: 40.875209609873316
+Average BFS: 390778.0016820323
+Average BIBFS: 9583.70577828004
+24115
+
+Vertices: 4200
+Edges: 25970
+Processing...
+Processing...
+Processing...
+Average time with 4200.0 vertices: 45.08556936986971
+Average BFS: 478934.2807652151
+Average BIBFS: 10621.045589365915
+25970
+
+Vertices: 4500
+Edges: 27825
+Processing...
+Processing...
+Processing...
+Average time with 4500.0 vertices: 45.056700566954554
+Average BFS: 479633.72698232153
+Average BIBFS: 10658.566392027042
+27825
+
+Vertices: 4800
+Edges: 29680
+Processing...
+Processing...
+Processing...
+Average time with 4800.0 vertices: 47.10586657433507
+Average BFS: 539374.6343851982
+Average BIBFS: 11473.298344447987
+29680
+Vertices: 0
+Done!
