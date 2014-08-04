@@ -87,8 +87,8 @@ public class TestGraph {
 		q.importIndex(iGN, "GROUP_NAME");
 		q.importMainIndex(iID);
 //
-//		SubgraphMatcher matcher = new SubgraphMatcher(q);
-//		matcher.testDiamondQuery();
+		SubgraphMatcher matcher = new SubgraphMatcher(q);
+		matcher.testDiamondQuery();
 //		matcher.testAggregationQuery();
 
 		// GraphImporterText gimp = new GraphImporterText(dg);
@@ -96,7 +96,7 @@ public class TestGraph {
 
 		// System.out.println("Import Successful!");
 		 SearchTester search = new SearchTester();
-		 search.test();
+//		 search.test();
 //		 search.repeatedTest();
 
 		// GmlExporter<PropertyVertex, PropertyEdge> ge = new

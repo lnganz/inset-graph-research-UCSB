@@ -131,8 +131,8 @@ public class SubgraphMatcher {
 		String edge12, edge13, edge24, edge34;
 		p1.set("GROUP_NAME", "Taliban");
 		p2.set("COUNTRY_CODE", 4);
-		p3.set("COUNTRY_CODE", null);
-		p4.set("CORPORATION_NAME", "School");
+		p3.set("COUNTRY_CODE", 4);
+		p4.set("CORPORATION_NAME", null);
 		edge12 = "PERPETRATED";
 		edge13 = "PERPETRATED";
 		edge34 = "TARGET_CORPORATION";

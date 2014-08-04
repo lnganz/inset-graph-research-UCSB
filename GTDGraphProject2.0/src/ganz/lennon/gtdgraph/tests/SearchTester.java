@@ -160,17 +160,18 @@ public class SearchTester {
 			v1 = randomVertex(verticesAdded);
 			v2 = randomVertex(vertices);
 			if (Math.random() < .5){
-				if (!g.containsEdge(v1, v2)){
+				if (!v1.equals(v2) && !g.containsEdge(v1, v2)){
 					g.addEdge(v1, v2);
 					edgesAdded++;
 				}
 			} else {
-				if (!g.containsEdge(v2, v1)){
+				if (!v1.equals(v2) && !g.containsEdge(v2, v1)){
 					g.addEdge(v2, v1);
 					edgesAdded++;
 				}
 			}
 		}
+		vertices.addAll(verticesAdded);
 	}
 	
 	private ArrayList<PropertyVertex> addVertices(int numNodesToAdd){
@@ -403,9 +404,8 @@ public class SearchTester {
 		}
 		// System.out.println("Paths found: " + count);
 		if (count > 0) {
-			avgToReturn = (100 * (bibfsSum / count) / (double) (bfsSum / count));
-			// System.out.println("Average Percent: " + df.format(avgToReturn)
-			// + "%");
+//			avgToReturn = (bibfsSum / count) / (double) (bfsSum / count);
+			avgToReturn = (bfsSum / (double)count) / (bibfsSum /(double) count);
 			return avgToReturn;
 		} else
 			return -1;
