@@ -16,3 +16,7 @@ For example, when the size of a graph increases BIBFS quickly outpaces BFS and c
 However, when the density increases the performance improvement is less significant.
 Additionally, we performed a case study to demonstrate our new pattern matching algorithm. 
 We envision that such a system can be used to analyze a wide variety of networks in the “big data era”.
+
+## Final Poster
+
+<img src="screenshots/inset_poster.pdf" height="1000" alt="Poster"/>
