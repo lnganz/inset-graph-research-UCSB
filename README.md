@@ -17,6 +17,11 @@ However, when the density increases the performance improvement is less signific
 Additionally, we performed a case study to demonstrate our new pattern matching algorithm. 
 We envision that such a system can be used to analyze a wide variety of networks in the “big data era”.
 
+
+## Presentation Video
+
+[Lennon Ganz - INSET 2014](https://www.youtube.com/watch?v=HGrdiqF7sL8)
+
 ## Final Poster
 
-<img src="screenshots/inset_poster.pdf" height="1000" alt="Poster"/>
+[Finding Patterns in Complex Social Networks](https://drive.google.com/open?id=0B768S0QtfNoeVEpHaFJrQ0ZhWnM)
